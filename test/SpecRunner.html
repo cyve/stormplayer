@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Jasmine Spec Runner v2.0.0</title>
+
+	<link rel="shortcut icon" type="image/png" href="jasmine-2.0.0/jasmine_favicon.png">
+	<link rel="stylesheet" type="text/css" href="jasmine-2.0.0/jasmine.css">
+
+	<script type="text/javascript" src="jasmine-2.0.0/jasmine.js"></script>
+	<script type="text/javascript" src="jasmine-2.0.0/jasmine-html.js"></script>
+	<script type="text/javascript" src="jasmine-2.0.0/boot.js"></script>
+
+	<!-- include source files here... -->
+	<script type="text/javascript" src="../src/AudioPlayer.js"></script>
+	<script type="text/javascript" src="../src/Tracklist.js"></script>
+	<script type="text/javascript" src="../src/StormPlayer.js"></script>
+	<script type="text/javascript">
+		var status,progress;
+		var audioPlayer = new AudioPlayer({
+			src:'../berceuse.mp3',
+			onplay : function(){
+				status = "playing";
+			},
+			onpause : function(){
+				status = "paused";
+			},
+			onprogress : function(){
+				progress = this.audio.currentTime
+			},
+			onfinish : function(){
+				status = "finished";
+			}
+		});
+	</script>
+
+	<!-- include spec files here... -->
+	<script type="text/javascript" src="spec/AudioPlayer.js"></script>
+	<script type="text/javascript" src="spec/Tracklist.js"></script>
+	<script type="text/javascript" src="spec/StormPlayer.js"></script>
+</head>
+<body>
+</body>
+</html>
