@@ -5,12 +5,19 @@
 
 var StormPlayer = function(params){
 	this.tracklist = new Tracklist();
+
+	this.repeat = false;
+	this.random = false;
+	this.mute = false;
+	this.duration = 0;
+
+	//this.playerDefaultEvents = params.events ||
 }
-StormPlayer.prototype.setTracklist = function(tracklist, options) {
+StormPlayer.prototype.setTracklist = function(tracks, options) {
 	this.tracklist = new Tracklist();
 	var track;
-	for(var i in tracklist){
-		track = tracklist[i];
+	for(var i in tracks){
+		track = tracks[i];
 		if(track instanceof AudioPlayer){
 			this.tracklist.add(track);
 		}
