@@ -1,0 +1,11 @@
+{
+  "name": "cyve/stormplayer",
+  "description": "JavaScript audio player",
+  "license": "MIT",
+  "authors": [
+    "Cyril Vmd <cyril@cyrilwebdesign.com>"
+  ],
+  "dependencies": {
+    "jasmine-core": "^2.4.1"
+  }
+}
