@@ -5,6 +5,8 @@
 
 var AudioPlayer = function(params){
 	this.type = 'html5';
+	this.mute = false;
+	this.muteVolume = 1;
 	this.audio = document.createElement('audio');
 	this.audio.src = params.src || null;
 	this.events = {
@@ -61,4 +63,16 @@ AudioPlayer.prototype.volume = function(value){
 		this.audio.volume = value;
 		return this;
 	}
+}
+AudioPlayer.prototype.toggleMute = function(){
+	if(this.mute){
+		this.audio.volume = this.muteVolume;
+		this.mute = false;
+	}
+	else{
+		this.muteVolume = this.audio.volume;
+		this.audio.volume = 0;
+		this.mute = true;
+	}
+	return this;
 }
