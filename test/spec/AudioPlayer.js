@@ -3,12 +3,17 @@
  * @license MIT
  */
 
-describe("Test play()", function() {
+describe("AudioPlayer.prototype.play()", function() {
+	var a;
 	beforeEach(function(done) {
-		audioPlayer.play();
+		a = audioPlayer.play();
 		setTimeout(function(){
 			done();
 		}, 100);
+	});
+
+	it("return instanceof AudioPlayer", function(){
+		expect(a instanceof AudioPlayer).toBe(true);
 	});
 
 	it("audioPlayer.audio.currentTime > 0", function(done){
@@ -17,53 +22,57 @@ describe("Test play()", function() {
 	});
 });
 
-describe("Test setPosition()", function() {
-	var a = audioPlayer.setPosition(10);
+describe("AudioPlayer.prototype.position()", function() {
+	var a = audioPlayer.position(10);
 	
-	it("instanceof AudioPlayer", function(){
+	it("return instanceof AudioPlayer", function(){
 		expect(a instanceof AudioPlayer).toBe(true);
 	});
 
 	it("audioPlayer.audio.currentTime >= 10", function(){
 		expect(audioPlayer.audio.currentTime).toBeCloseTo(10,1);
-		expect(audioPlayer.getPosition()).toBeCloseTo(10,1);
+		expect(audioPlayer.position()).toBeCloseTo(10,1);
 	});
 });
 
-describe("Test setSource()", function() {
-	var a = audioPlayer.setSource('http://localhost/stormplayer/test/test.mp3');
+describe("AudioPlayer.prototype.source()", function() {
+	var a = audioPlayer.source('http://localhost/stormplayer/test/test.mp3');
 	
-	it("instanceof AudioPlayer", function(){
+	it("return instanceof AudioPlayer", function(){
 		expect(a instanceof AudioPlayer).toBe(true);
 	});
 
 	it("audioPlayer.audio.src >= 'http://localhost/stormplayer/test/test.mp3'", function(){
 		expect(audioPlayer.audio.src).toBe('http://localhost/stormplayer/test/test.mp3');
-		expect(audioPlayer.getSource()).toBe('http://localhost/stormplayer/test/test.mp3');
+		expect(audioPlayer.source()).toBe('http://localhost/stormplayer/test/test.mp3');
 	});
 });
 
-describe("Test setVolume()", function() {
-	var a = audioPlayer.setVolume(0.5);
+describe("AudioPlayer.prototype.volume()", function() {
+	var a = audioPlayer.volume(0.5);
 	
-	it("instanceof AudioPlayer", function(){
+	it("return instanceof AudioPlayer", function(){
 		expect(a instanceof AudioPlayer).toBe(true);
 	});
 
 	it("audioPlayer.audio.volume = 0,5", function(){
 		expect(audioPlayer.audio.volume).toBe(0.5);
-		expect(audioPlayer.getVolume()).toBe(0.5);
+		expect(audioPlayer.volume()).toBe(0.5);
 	});
 });
 
-describe("Test pause()", function() {
-	var pauseTime;
+describe("AudioPlayer.prototype.pause()", function() {
+	var a,pauseTime;
 	beforeEach(function(done) {
-		audioPlayer.pause();
+		a = audioPlayer.pause();
 		pauseTime = audioPlayer.audio.currentTime;
 		setTimeout(function(){
 			done();
 		}, 100);
+	});
+
+	it("return instanceof AudioPlayer", function(){
+		expect(a instanceof AudioPlayer).toBe(true);
 	});
 
 	it("audioPlayer.audio.currentTime = pauseTime", function(){
@@ -71,12 +80,17 @@ describe("Test pause()", function() {
 	});
 });
 
-describe("Test stop()", function() {
+describe("AudioPlayer.prototype.stop()", function() {
+	var a;
 	beforeEach(function(done) {
-		audioPlayer.stop();
+		a = audioPlayer.stop();
 		setTimeout(function(){
 			done();
 		}, 100);
+	});
+
+	it("return instanceof AudioPlayer", function(){
+		expect(a instanceof AudioPlayer).toBe(true);
 	});
 
 	it("audioPlayer.audio.currentTime = 0", function(){
