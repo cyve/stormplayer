@@ -5,33 +5,40 @@
 
 var Tracklist = function(){
 	this.elements = [];
+	this.currentIndex = null;
+}
+Tracklist.prototype.length = function(){
+	return this.elements.length;
+}
+Tracklist.prototype.current = function(value){
+	if(typeof value === 'undefined'){
+		return this.elements[this.currentIndex];
+	}
+	else if(typeof value === 'number' && value >= 0 && value < this.elements.length){
+		this.currentIndex = value;
+		return this;
+	}
 }
 Tracklist.prototype.add = function(player){
 	this.elements.push(player);
-	this.currentElementIndex = 0;
+	this.currentIndex = null;
+	return this;
 }
 Tracklist.prototype.remove = function(element){
-	if(typeof element === "integer"){
-		this.elements.splice(element);
+	if(typeof element === "number"){
+		this.elements.splice(element, 1);
 	}
 	else if(element instanceof AudioPlayer){
 		for(var i in this.elements){
 			if(this.elements[i].audioElement.src === element.audioElement.src){
-				this.elements.splice(i);
+				this.elements.splice(i, 1);
 			}
 		}
 	}
+	return this;
 }
 Tracklist.prototype.empty = function(){
 	this.elements = [];
-}
-Tracklist.prototype.play = function(index){
-	this.elements[index].play();
-	this.currentElementIndex = index;
-}
-Tracklist.prototype.pause = function(){
-	this.elements[this.currentElementIndex].pause();
-}
-Tracklist.prototype.next = function(){
-	this.play(++this.currentElementIndex);
+	this.currentIndex = null;
+	return this;
 }
