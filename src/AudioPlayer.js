@@ -24,19 +24,36 @@ var AudioPlayer = function(params){
 
 	_this = this;
 }
+
+/**
+ * @return AudioPlayer
+ */
 AudioPlayer.prototype.play = function(){
 	this.audio.play();
 	return this;
 }
+
+/**
+ * @return AudioPlayer
+ */
 AudioPlayer.prototype.pause = function(){
 	this.audio.pause();
 	return this;
 }
+
+/**
+ * @return AudioPlayer
+ */
 AudioPlayer.prototype.stop = function(){
 	this.audio.pause();
 	this.audio.currentTime = 0;
 	return this;
 }
+
+/**
+ * @param int value
+ * @return int|AudioPlayer
+ */
 AudioPlayer.prototype.position = function(value){
 	if(typeof value === 'undefined'){
 		return this.audio.currentTime;
@@ -46,6 +63,11 @@ AudioPlayer.prototype.position = function(value){
 		return this;
 	}
 }
+
+/**
+ * @param string value
+ * @return string|AudioPlayer
+ */
 AudioPlayer.prototype.source = function(value){
 	if(typeof value === 'undefined'){
 		return this.audio.src;
@@ -55,6 +77,11 @@ AudioPlayer.prototype.source = function(value){
 		return this;
 	}
 }
+
+/**
+ * @param string value
+ * @return int|AudioPlayer
+ */
 AudioPlayer.prototype.volume = function(value){
 	if(typeof value === 'undefined'){
 		return this.audio.volume;
@@ -64,6 +91,10 @@ AudioPlayer.prototype.volume = function(value){
 		return this;
 	}
 }
+
+/**
+ * @return AudioPlayer
+ */
 AudioPlayer.prototype.toggleMute = function(){
 	if(this.mute){
 		this.audio.volume = this.muteVolume;
