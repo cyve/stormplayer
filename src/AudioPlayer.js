@@ -114,3 +114,10 @@ AudioPlayer.prototype.toggleMute = function(){
 	}
 	return this;
 }
+
+/**
+ * @return boolean
+ */
+AudioPlayer.prototype.isPlaying = function(){
+	return this.audio.currentTime > 0 && !this.audio.paused;
+}
