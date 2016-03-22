@@ -54,6 +54,19 @@ describe("AudioPlayer.prototype.source()", function() {
 	});
 });
 
+describe("AudioPlayer.prototype.toogleMute()", function() {
+	var a = audioPlayer.toggleMute();
+	
+	it("return instanceof AudioPlayer", function(){
+		expect(a instanceof AudioPlayer).toBe(true);
+	});
+
+	it("mute audio element", function(){
+		expect(audioPlayer.mute).toBe(true);
+		expect(audioPlayer.muteVolume).toBe(1);
+	});
+});
+
 describe("AudioPlayer.prototype.volume()", function() {
 	var a = audioPlayer.volume(0.5);
 	
