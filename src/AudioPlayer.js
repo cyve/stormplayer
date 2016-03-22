@@ -65,6 +65,13 @@ AudioPlayer.prototype.position = function(value){
 }
 
 /**
+ * @return int
+ */
+AudioPlayer.prototype.duration = function(){
+	return this.audio.duration;
+}
+
+/**
  * @param string value
  * @return string|AudioPlayer
  */
