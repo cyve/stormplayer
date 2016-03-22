@@ -38,6 +38,12 @@ describe("AudioPlayer.prototype.position()", function() {
 	});
 });
 
+describe("AudioPlayer.prototype.duration()", function() {
+	it("get audio duration", function(){
+		expect(audioPlayer.duration()).toBeGreaterThan(30);
+	});
+});
+
 describe("AudioPlayer.prototype.source()", function() {
 	var a = audioPlayer.source('http://localhost/stormplayer/test/test.mp3');
 	
