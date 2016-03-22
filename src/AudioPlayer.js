@@ -5,35 +5,38 @@
 
 var AudioPlayer = function(params){
 	this.type = 'html5';
-	this.mute = false;
-	this.muteVolume = 1;
+	this._mute = false;
+	this._volume = 1;
 	this.audio = document.createElement('audio');
 	this.audio.src = params.src || null;
-	this.events = {
-		'onplay' : params.onplay || null,
-		'onpause' : params.onpause || null,
-		'onprogress' : params.onprogress || null,
-		'onfinish' : params.onfinish || null,
-		'onerror' : params.onerror || null
-	};
+	this.events = params.events || {};
 	
-	this.audio.addEventListener('playing', this.audioElement, function(){
-		_this.events['onplay'].call(this);
+	var _this = this;
+	this.audio.addEventListener('playing', function(e){
+		if(typeof _this.events.onplay === 'function'){
+			_this.events.onplay.call(_this, e);
+		}
 	});
-	this.audio.addEventListener('pause', this.audioElement, function(){
-		_this.events['onpause'].call(this);
+	this.audio.addEventListener('pause', function(e){
+		if(typeof _this.events.onpause === 'function'){
+			_this.events.onpause.call(_this, e);
+		}
 	});
-	this.audio.addEventListener('progress', this.audioElement, function(){
-		_this.events['onprogress'].call(this);
+	this.audio.addEventListener('timeupdate', function(e){
+		if(typeof _this.events.ontimeupdate === 'function'){
+			_this.events.ontimeupdate.call(_this, e, _this.audio.currentTime);
+		}
 	});
-	this.audio.addEventListener('ended', this.audioElement, function(){
-		_this.events['onfinish'].call(this);
+	this.audio.addEventListener('ended', function(e){
+		if(typeof _this.events.onfinish === 'function'){
+			_this.events.onfinish.call(_this, e);
+		}
 	});
-	this.audio.addEventListener('error', this.audioElement, function(error){
-		_this.events['onerror'].call(this, error);
+	this.audio.addEventListener('error', function(e, error){
+		if(typeof _this.events.onerror === 'function'){
+			_this.events.onerror.call(_this, e, error);
+		}
 	});
-
-	_this = this;
 }
 
 /**
@@ -113,17 +116,30 @@ AudioPlayer.prototype.volume = function(value){
 /**
  * @return AudioPlayer
  */
-AudioPlayer.prototype.toggleMute = function(){
-	if(this.mute){
-		this.audio.volume = this.muteVolume;
-		this.mute = false;
-	}
-	else{
-		this.muteVolume = this.audio.volume;
-		this.audio.volume = 0;
-		this.mute = true;
-	}
+AudioPlayer.prototype.mute = function(){
+	this._volume = this.audio.volume;
+	this.audio.volume = 0;
+	this._mute = true;
 	return this;
+}
+
+/**
+ * @return AudioPlayer
+ */
+AudioPlayer.prototype.unmute = function(){
+	this.audio.volume = this._volume;
+	this._mute = false;
+	return this;
+}
+
+/**
+ * @return AudioPlayer
+ */
+AudioPlayer.prototype.toggleMute = function(){
+	if(this._mute){
+		return this.unmute();
+	}
+	return this.mute();
 }
 
 /**
