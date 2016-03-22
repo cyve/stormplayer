@@ -58,6 +58,7 @@ describe("Method Tracklist.prototype.remove()", function() {
 
 	it("remove an element", function(){
 		expect(tracklist.elements.length).toBe(1);
+		expect(tracklist.currentIndex).toBe(0);
 	});
 });
 
