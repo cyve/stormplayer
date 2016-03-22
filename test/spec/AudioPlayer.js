@@ -6,7 +6,7 @@
 describe("AudioPlayer.prototype.play()", function() {
 	var audioPlayer = new AudioPlayer({ src:'test.mp3', events:{ onplay:function(){} } });
 		audioPlayer.audio.volume = 0;
-	
+
 	var a;
 	beforeEach(function(done) {
 		spyOn(audioPlayer.events, 'onplay');
@@ -15,7 +15,7 @@ describe("AudioPlayer.prototype.play()", function() {
 			done();
 		}, 100);
 	});
-	
+
 	it("play audio", function(){
 		expect(a instanceof AudioPlayer).toBe(true);
 		expect(audioPlayer.audio.currentTime).toBeGreaterThan(0);
@@ -28,7 +28,7 @@ describe("AudioPlayer.prototype.pause()", function() {
 	var audioPlayer = new AudioPlayer({ src:'test.mp3', events:{ onpause:function(){} } });
 		audioPlayer.audio.volume = 0;
 		audioPlayer.play();
-	
+
 	var a;
 	beforeEach(function(done) {
 		spyOn(audioPlayer.events, 'onpause');
@@ -49,7 +49,7 @@ describe("AudioPlayer.prototype.stop()", function() {
 	var audioPlayer = new AudioPlayer({ src:'test.mp3', events:{ onfinish:function(){} } });
 		audioPlayer.audio.volume = 0;
 		audioPlayer.play();
-	
+
 	var a;
 	beforeEach(function(done) {
 		a = audioPlayer.stop();
@@ -74,7 +74,7 @@ describe("AudioPlayer.prototype.isPlaying()", function() {
 			done();
 		}, 100);
 	});
-	
+
 	it("get audio status", function(){
 		expect(audioPlayer.isPlaying()).toBe(true);
 	});
@@ -94,13 +94,24 @@ describe("AudioPlayer.prototype.position()", function() {
 	it("get current position", function(){
 		expect(audioPlayer.position()).toBeGreaterThan(9);
 	});
+
+	it("throw exception if invalid argument", function(){
+		var testString = function(){
+			audioPlayer.position('a');
+		};
+		var testNegative = function(){
+			audioPlayer.position(-1);
+		};
+		expect(testString).toThrow();
+		expect(testNegative).toThrow();
+	});
 });
 
 describe("AudioPlayer.prototype.duration()", function() {
 	var audioPlayer = new AudioPlayer({ src:'test.mp3' });
 		audioPlayer.audio.volume = 0;
 		audioPlayer.play();
-	
+
 	it("get audio duration", function(){
 		expect(audioPlayer.duration()).toBeGreaterThan(30);
 	});
@@ -109,7 +120,7 @@ describe("AudioPlayer.prototype.duration()", function() {
 describe("AudioPlayer.prototype.source()", function() {
 	var audioPlayer = new AudioPlayer({ src:'test.mp3' });
 		audioPlayer.audio.volume = 0;
-	
+
 	it("set source", function(){
 		var a = audioPlayer.source('http://localhost/stormplayer/test/test.mp3');
 		expect(a instanceof AudioPlayer).toBe(true);
@@ -119,13 +130,24 @@ describe("AudioPlayer.prototype.source()", function() {
 	it("get source", function(){
 		expect(audioPlayer.source()).toBe('http://localhost/stormplayer/test/test.mp3');
 	});
+
+	it("throw exception if invalid argument", function(){
+		var testNumber = function(){
+			audioPlayer.source(123);
+		};
+		var testObject = function(){
+			audioPlayer.source({});
+		};
+		expect(testNumber).toThrow();
+		expect(testObject).toThrow();
+	});
 });
 
 describe("AudioPlayer.prototype.mute()", function() {
 	var audioPlayer = new AudioPlayer({ src:'test.mp3' });
 		audioPlayer.audio.volume = 1;
 		//audioPlayer.play();
-	
+
 	it("mute audio element", function(){
 		var a = audioPlayer.mute();
 		expect(a instanceof AudioPlayer).toBe(true);
@@ -139,7 +161,7 @@ describe("AudioPlayer.prototype.unmute()", function() {
 	var audioPlayer = new AudioPlayer({ src:'test.mp3' });
 		audioPlayer.audio.volume = 0;
 		//audioPlayer.play();
-	
+
 	it("mute audio element", function(){
 		var a = audioPlayer.unmute();
 		expect(a instanceof AudioPlayer).toBe(true);
@@ -153,7 +175,7 @@ describe("AudioPlayer.prototype.toogleMute()", function() {
 	var audioPlayer = new AudioPlayer({ src:'test.mp3' });
 		audioPlayer.audio.volume = 1;
 		//audioPlayer.play();
-	
+
 	it("mute audio element", function(){
 		var a = audioPlayer.toggleMute();
 		expect(a instanceof AudioPlayer).toBe(true);
@@ -167,7 +189,7 @@ describe("AudioPlayer.prototype.volume()", function() {
 	var audioPlayer = new AudioPlayer({ src:'test.mp3' });
 		audioPlayer.audio.volume = 1;
 		//audioPlayer.play();
-	
+
 	it("set volume of audio element", function(){
 		var a = audioPlayer.volume(0);
 		expect(a instanceof AudioPlayer).toBe(true);
@@ -176,5 +198,20 @@ describe("AudioPlayer.prototype.volume()", function() {
 
 	it("get volume of audio element", function(){
 		expect(audioPlayer.volume()).toBe(0);
+	});
+
+	it("throw exception if invalid argument", function(){
+		var testString = function(){
+			audioPlayer.volume('a');
+		};
+		var testNegative = function(){
+			audioPlayer.volume(-1);
+		};
+		var testSuperior = function(){
+			audioPlayer.volume(1.5);
+		};
+		expect(testString).toThrow();
+		expect(testNegative).toThrow();
+		expect(testSuperior).toThrow();
 	});
 });
