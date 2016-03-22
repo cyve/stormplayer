@@ -4,38 +4,90 @@
  */
 
 describe("AudioPlayer.prototype.play()", function() {
+	var audioPlayer = new AudioPlayer({ src:'test.mp3', events:{ onplay:function(){} } });
+		audioPlayer.audio.volume = 0;
+	
 	var a;
 	beforeEach(function(done) {
+		spyOn(audioPlayer.events, 'onplay');
 		a = audioPlayer.play();
 		setTimeout(function(){
 			done();
 		}, 100);
 	});
-
-	it("return instanceof AudioPlayer", function(){
-		expect(a instanceof AudioPlayer).toBe(true);
-	});
-
+	
 	it("play audio", function(){
+		expect(a instanceof AudioPlayer).toBe(true);
 		expect(audioPlayer.audio.currentTime).toBeGreaterThan(0);
 		expect(audioPlayer.audio.paused).toBe(false);
+		expect(audioPlayer.events.onplay).toHaveBeenCalled();
+	});
+});
+
+describe("AudioPlayer.prototype.pause()", function() {
+	var audioPlayer = new AudioPlayer({ src:'test.mp3', events:{ onpause:function(){} } });
+		audioPlayer.audio.volume = 0;
+		audioPlayer.play();
+	
+	var a;
+	beforeEach(function(done) {
+		spyOn(audioPlayer.events, 'onpause');
+		a = audioPlayer.pause();
+		setTimeout(function(){
+			done();
+		}, 100);
+	});
+
+	it("pause audio", function(){
+		expect(a instanceof AudioPlayer).toBe(true);
+		expect(audioPlayer.audio.paused).toBe(true);
+		expect(audioPlayer.events.onpause).toHaveBeenCalled();
+	});
+});
+
+describe("AudioPlayer.prototype.stop()", function() {
+	var audioPlayer = new AudioPlayer({ src:'test.mp3', events:{ onfinish:function(){} } });
+		audioPlayer.audio.volume = 0;
+		audioPlayer.play();
+	
+	var a;
+	beforeEach(function(done) {
+		a = audioPlayer.stop();
+		setTimeout(function(){
+			done();
+		}, 100);
+	});
+
+	it("stop audio", function(){
+		expect(a instanceof AudioPlayer).toBe(true);
+		expect(audioPlayer.audio.currentTime).toBe(0);
+		expect(audioPlayer.audio.paused).toBe(true);
 	});
 });
 
 describe("AudioPlayer.prototype.isPlaying()", function() {
+	var audioPlayer = new AudioPlayer({ src:'test.mp3' });
+		audioPlayer.audio.volume = 0;
+	beforeEach(function(done) {
+		audioPlayer.play();
+		setTimeout(function(){
+			done();
+		}, 100);
+	});
+	
 	it("get audio status", function(){
 		expect(audioPlayer.isPlaying()).toBe(true);
 	});
 });
 
 describe("AudioPlayer.prototype.position()", function() {
-	var a = audioPlayer.position(10);
-	
-	it("return instanceof AudioPlayer", function(){
-		expect(a instanceof AudioPlayer).toBe(true);
-	});
+	var audioPlayer = new AudioPlayer({ src:'test.mp3' });
+		audioPlayer.audio.volume = 0;
+		audioPlayer.play();
 
 	it("set current position", function(){
+		var a = audioPlayer.position(10);
+		expect(a instanceof AudioPlayer).toBe(true);
 		expect(audioPlayer.audio.currentTime).toBeGreaterThan(9);
 	});
 
@@ -45,19 +97,22 @@ describe("AudioPlayer.prototype.position()", function() {
 });
 
 describe("AudioPlayer.prototype.duration()", function() {
+	var audioPlayer = new AudioPlayer({ src:'test.mp3' });
+		audioPlayer.audio.volume = 0;
+		audioPlayer.play();
+	
 	it("get audio duration", function(){
 		expect(audioPlayer.duration()).toBeGreaterThan(30);
 	});
 });
 
 describe("AudioPlayer.prototype.source()", function() {
-	var a = audioPlayer.source('http://localhost/stormplayer/test/test.mp3');
+	var audioPlayer = new AudioPlayer({ src:'test.mp3' });
+		audioPlayer.audio.volume = 0;
 	
-	it("return instanceof AudioPlayer", function(){
-		expect(a instanceof AudioPlayer).toBe(true);
-	});
-
 	it("set source", function(){
+		var a = audioPlayer.source('http://localhost/stormplayer/test/test.mp3');
+		expect(a instanceof AudioPlayer).toBe(true);
 		expect(audioPlayer.audio.src).toBe('http://localhost/stormplayer/test/test.mp3');
 	});
 
@@ -66,70 +121,60 @@ describe("AudioPlayer.prototype.source()", function() {
 	});
 });
 
-describe("AudioPlayer.prototype.toogleMute()", function() {
-	var a = audioPlayer.toggleMute();
+describe("AudioPlayer.prototype.mute()", function() {
+	var audioPlayer = new AudioPlayer({ src:'test.mp3' });
+		audioPlayer.audio.volume = 1;
+		//audioPlayer.play();
 	
-	it("return instanceof AudioPlayer", function(){
-		expect(a instanceof AudioPlayer).toBe(true);
-	});
-
 	it("mute audio element", function(){
-		expect(audioPlayer.mute).toBe(true);
-		expect(audioPlayer.muteVolume).toBe(1);
+		var a = audioPlayer.mute();
+		expect(a instanceof AudioPlayer).toBe(true);
+		expect(audioPlayer._mute).toBe(true);
+		expect(audioPlayer._volume).toBe(1);
+		expect(audioPlayer.audio.volume).toBe(0);
+	});
+});
+
+describe("AudioPlayer.prototype.unmute()", function() {
+	var audioPlayer = new AudioPlayer({ src:'test.mp3' });
+		audioPlayer.audio.volume = 0;
+		//audioPlayer.play();
+	
+	it("mute audio element", function(){
+		var a = audioPlayer.unmute();
+		expect(a instanceof AudioPlayer).toBe(true);
+		expect(audioPlayer._mute).toBe(false);
+		expect(audioPlayer._volume).toBe(1);
+		expect(audioPlayer.audio.volume).toBe(1);
+	});
+});
+
+describe("AudioPlayer.prototype.toogleMute()", function() {
+	var audioPlayer = new AudioPlayer({ src:'test.mp3' });
+		audioPlayer.audio.volume = 1;
+		//audioPlayer.play();
+	
+	it("mute audio element", function(){
+		var a = audioPlayer.toggleMute();
+		expect(a instanceof AudioPlayer).toBe(true);
+		expect(audioPlayer._mute).toBe(true);
+		expect(audioPlayer._volume).toBe(1);
+		expect(audioPlayer.audio.volume).toBe(0);
 	});
 });
 
 describe("AudioPlayer.prototype.volume()", function() {
-	var a = audioPlayer.volume(0.5);
+	var audioPlayer = new AudioPlayer({ src:'test.mp3' });
+		audioPlayer.audio.volume = 1;
+		//audioPlayer.play();
 	
-	it("return instanceof AudioPlayer", function(){
-		expect(a instanceof AudioPlayer).toBe(true);
-	});
-
 	it("set volume of audio element", function(){
-		expect(audioPlayer.audio.volume).toBe(0.5);
+		var a = audioPlayer.volume(0);
+		expect(a instanceof AudioPlayer).toBe(true);
+		expect(audioPlayer.audio.volume).toBe(0);
 	});
 
 	it("get volume of audio element", function(){
-		expect(audioPlayer.volume()).toBe(0.5);
-	});
-});
-
-describe("AudioPlayer.prototype.pause()", function() {
-	var a,pauseTime;
-	beforeEach(function(done) {
-		a = audioPlayer.pause();
-		pauseTime = audioPlayer.audio.currentTime;
-		setTimeout(function(){
-			done();
-		}, 100);
-	});
-
-	it("return instanceof AudioPlayer", function(){
-		expect(a instanceof AudioPlayer).toBe(true);
-	});
-
-	it("pause audio", function(){
-		expect(audioPlayer.audio.currentTime).toEqual(pauseTime);
-		expect(audioPlayer.audio.paused).toBe(true);
-	});
-});
-
-describe("AudioPlayer.prototype.stop()", function() {
-	var a;
-	beforeEach(function(done) {
-		a = audioPlayer.stop();
-		setTimeout(function(){
-			done();
-		}, 100);
-	});
-
-	it("return instanceof AudioPlayer", function(){
-		expect(a instanceof AudioPlayer).toBe(true);
-	});
-
-	it("stop audio", function(){
-		expect(audioPlayer.audio.currentTime).toBe(0);
-		expect(audioPlayer.audio.paused).toBe(true);
+		expect(audioPlayer.volume()).toBe(0);
 	});
 });

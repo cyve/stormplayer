@@ -5,75 +5,146 @@
 
 describe("Method Tracklist.prototype.add()", function() {
 	var tracklist = new Tracklist();
-	var a = tracklist.add(1);
-	
-	it("return instance of Tracklist", function(){
-		expect(a instanceof Tracklist).toBe(true);
-	});
 
 	it("add element", function(){
-		expect(tracklist.elements.length).toBe(1);
+		var a = tracklist.add(1);
+		expect(a instanceof Tracklist).toBe(true);
+		expect(tracklist.elements).toEqual([1]);
+	});
+	
+	it("add elements", function(){
+		var a = tracklist.add([5,6]);
+		expect(a instanceof Tracklist).toBe(true);
+		expect(tracklist.elements).toEqual([1,5,6]);
+	});
+	
+	it("insert element", function(){
+		var a = tracklist.add(2, 1);
+		expect(a instanceof Tracklist).toBe(true);
+		expect(tracklist.elements).toEqual([1,2,5,6]);
+	});
+	
+	it("insert elements", function(){
+		var a = tracklist.add([3,4], 2);
+		expect(a instanceof Tracklist).toBe(true);
+		expect(tracklist.elements).toEqual([1,2,3,4,5,6]);
 	});
 });
 
 describe("Method Tracklist.prototype.length()", function() {
 	var tracklist = new Tracklist();
-		tracklist.elements.push(1);
-		tracklist.elements.push(2);
+		tracklist.elements = [1,2,3,4];
+		tracklist.currentIndex = 0;
 
 	it("return number of elements", function(){
-		expect(tracklist.length()).toEqual(tracklist.elements.length);
+		expect(tracklist.length()).toBe(4);
 	});
 });
 
 describe("Method Tracklist.prototype.current()", function() {
 	var tracklist = new Tracklist();
-		tracklist.elements.push(1);
-		tracklist.elements.push(2);
-	var a = tracklist.current(1);
+		tracklist.elements = [1,2,3,4];
+		tracklist.currentIndex = 1;
 	
-	it("return instance of Tracklist", function(){
-		expect(a instanceof Tracklist).toBe(true);
+	it("get current element", function(){
+		expect(tracklist.current()).toBe(2);
+	});
+	
+	it("set current element", function(){
+		tracklist.current(1);
+		expect(tracklist.currentIndex).toBe(1);
+	});
+});
+
+describe("Method Tracklist.prototype.prev()", function() {
+	var tracklist = new Tracklist();
+		tracklist.elements = [1,2,3,4];
+		tracklist.currentIndex = 1;
+	
+	it("get previous element", function(){
+		expect(tracklist.prev()).toBe(1);
+	});
+	
+	it("set current element", function(){
+		expect(tracklist.currentIndex).toBe(0);
+	});
+});
+
+describe("Method Tracklist.prototype.next()", function() {
+	var tracklist = new Tracklist();
+		tracklist.elements = [1,2,3,4];
+		tracklist.currentIndex = 0;
+	
+	it("get next element", function(){
+		expect(tracklist.next()).toBe(2);
 	});
 	
 	it("set current element", function(){
 		expect(tracklist.currentIndex).toBe(1);
 	});
+});
+
+describe("Method Tracklist.prototype.first()", function() {
+	var tracklist = new Tracklist();
+		tracklist.elements = [1,2,3,4];
+		tracklist.currentIndex = 0;
 	
-	it("get current element", function(){
-		expect(tracklist.current()).toBe(2);
+	it("get first element", function(){
+		expect(tracklist.first()).toBe(1);
+	});
+	
+	it("set current element", function(){
+		expect(tracklist.currentIndex).toBe(0);
+	});
+});
+
+describe("Method Tracklist.prototype.last()", function() {
+	var tracklist = new Tracklist();
+		tracklist.elements = [1,2,3,4];
+		tracklist.currentIndex = 0;
+	
+	it("get last element", function(){
+		expect(tracklist.last()).toBe(4);
+	});
+	
+	it("set current element", function(){
+		expect(tracklist.currentIndex).toBe(3);
+	});
+});
+
+describe("Method Tracklist.prototype.move()", function() {
+	var tracklist = new Tracklist();
+		tracklist.elements = [1,2,3,4];
+		tracklist.currentIndex = 0;
+	
+	it("remove an element", function(){
+		var a = tracklist.move(1,2);
+		expect(a instanceof Tracklist).toBe(true);
+		expect(tracklist.elements).toEqual([1,3,2,4]);
 	});
 });
 
 describe("Method Tracklist.prototype.remove()", function() {
 	var tracklist = new Tracklist();
-		tracklist.elements.push(1);
-		tracklist.elements.push(2);
+		tracklist.elements = [1,2,3,4];
 		tracklist.currentIndex = 0;
-	var a = tracklist.remove(1);
 	
-	it("return instanceof Tracklist", function(){
-		expect(a instanceof Tracklist).toBe(true);
-	});
-
 	it("remove an element", function(){
-		expect(tracklist.elements.length).toBe(1);
-		expect(tracklist.currentIndex).toBe(0);
+		var a = tracklist.remove(1);
+		expect(a instanceof Tracklist).toBe(true);
+		expect(tracklist.elements).toEqual([1,3,4]);
 	});
 });
 
 describe("Method Tracklist.prototype.empty()", function() {
 	var tracklist = new Tracklist();
-		tracklist.elements.push(1);
+		tracklist.elements = [1,2,3,4];
 		tracklist.currentIndex = 0;
-	var a = tracklist.empty();
 	
-	it("return instanceof Tracklist", function(){
-		expect(a instanceof Tracklist).toBe(true);
-	});
-
 	it("remove all elements", function(){
-		expect(tracklist.elements.length).toBe(0);
+		var a = tracklist.empty();
+		expect(a instanceof Tracklist).toBe(true);
+		expect(tracklist.elements).toEqual([]);
 		expect(tracklist.currentIndex).toBeNull();
 	});
 });
