@@ -16,9 +16,15 @@ describe("AudioPlayer.prototype.play()", function() {
 		expect(a instanceof AudioPlayer).toBe(true);
 	});
 
-	it("play audio", function(done){
+	it("play audio", function(){
 		expect(audioPlayer.audio.currentTime).toBeGreaterThan(0);
-		done();
+		expect(audioPlayer.audio.paused).toBe(false);
+	});
+});
+
+describe("AudioPlayer.prototype.isPlaying()", function() {
+	it("get audio status", function(){
+		expect(audioPlayer.isPlaying()).toBe(true);
 	});
 });
 
@@ -30,11 +36,11 @@ describe("AudioPlayer.prototype.position()", function() {
 	});
 
 	it("set current position", function(){
-		expect(audioPlayer.audio.currentTime).toBeCloseTo(10,1);
+		expect(audioPlayer.audio.currentTime).toBeGreaterThan(9);
 	});
 
 	it("get current position", function(){
-		expect(audioPlayer.position()).toBeCloseTo(10,1);
+		expect(audioPlayer.position()).toBeGreaterThan(9);
 	});
 });
 
@@ -105,6 +111,7 @@ describe("AudioPlayer.prototype.pause()", function() {
 
 	it("pause audio", function(){
 		expect(audioPlayer.audio.currentTime).toEqual(pauseTime);
+		expect(audioPlayer.audio.paused).toBe(true);
 	});
 });
 
@@ -123,5 +130,6 @@ describe("AudioPlayer.prototype.stop()", function() {
 
 	it("stop audio", function(){
 		expect(audioPlayer.audio.currentTime).toBe(0);
+		expect(audioPlayer.audio.paused).toBe(true);
 	});
 });
