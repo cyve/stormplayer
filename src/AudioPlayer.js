@@ -13,14 +13,25 @@ var AudioPlayer = function(params){
 		'onplay' : params.onplay || null,
 		'onpause' : params.onpause || null,
 		'onprogress' : params.onprogress || null,
-		'onfinish' : params.onfinish || null
+		'onfinish' : params.onfinish || null,
+		'onerror' : params.onerror || null
 	};
-
-	/*
-	window.addEventListener('playing', this.audioElement, function(){
-		_this.events['onplay'].call();
+	
+	this.audio.addEventListener('playing', this.audioElement, function(){
+		_this.events['onplay'].call(this);
 	});
-	*/
+	this.audio.addEventListener('pause', this.audioElement, function(){
+		_this.events['onpause'].call(this);
+	});
+	this.audio.addEventListener('progress', this.audioElement, function(){
+		_this.events['onprogress'].call(this);
+	});
+	this.audio.addEventListener('ended', this.audioElement, function(){
+		_this.events['onfinish'].call(this);
+	});
+	this.audio.addEventListener('error', this.audioElement, function(error){
+		_this.events['onerror'].call(this, error);
+	});
 
 	_this = this;
 }
