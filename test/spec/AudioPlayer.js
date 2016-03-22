@@ -16,7 +16,7 @@ describe("AudioPlayer.prototype.play()", function() {
 		expect(a instanceof AudioPlayer).toBe(true);
 	});
 
-	it("audioPlayer.audio.currentTime > 0", function(done){
+	it("play audio", function(done){
 		expect(audioPlayer.audio.currentTime).toBeGreaterThan(0);
 		done();
 	});
@@ -29,8 +29,11 @@ describe("AudioPlayer.prototype.position()", function() {
 		expect(a instanceof AudioPlayer).toBe(true);
 	});
 
-	it("audioPlayer.audio.currentTime >= 10", function(){
+	it("set current position", function(){
 		expect(audioPlayer.audio.currentTime).toBeCloseTo(10,1);
+	});
+
+	it("get current position", function(){
 		expect(audioPlayer.position()).toBeCloseTo(10,1);
 	});
 });
@@ -42,8 +45,11 @@ describe("AudioPlayer.prototype.source()", function() {
 		expect(a instanceof AudioPlayer).toBe(true);
 	});
 
-	it("audioPlayer.audio.src >= 'http://localhost/stormplayer/test/test.mp3'", function(){
+	it("set source", function(){
 		expect(audioPlayer.audio.src).toBe('http://localhost/stormplayer/test/test.mp3');
+	});
+
+	it("get source", function(){
 		expect(audioPlayer.source()).toBe('http://localhost/stormplayer/test/test.mp3');
 	});
 });
@@ -55,8 +61,11 @@ describe("AudioPlayer.prototype.volume()", function() {
 		expect(a instanceof AudioPlayer).toBe(true);
 	});
 
-	it("audioPlayer.audio.volume = 0,5", function(){
+	it("set volume of audio element", function(){
 		expect(audioPlayer.audio.volume).toBe(0.5);
+	});
+
+	it("get volume of audio element", function(){
 		expect(audioPlayer.volume()).toBe(0.5);
 	});
 });
@@ -75,7 +84,7 @@ describe("AudioPlayer.prototype.pause()", function() {
 		expect(a instanceof AudioPlayer).toBe(true);
 	});
 
-	it("audioPlayer.audio.currentTime = pauseTime", function(){
+	it("pause audio", function(){
 		expect(audioPlayer.audio.currentTime).toEqual(pauseTime);
 	});
 });
@@ -93,7 +102,7 @@ describe("AudioPlayer.prototype.stop()", function() {
 		expect(a instanceof AudioPlayer).toBe(true);
 	});
 
-	it("audioPlayer.audio.currentTime = 0", function(){
+	it("stop audio", function(){
 		expect(audioPlayer.audio.currentTime).toBe(0);
 	});
 });
