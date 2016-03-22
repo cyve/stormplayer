@@ -18,16 +18,46 @@ Tracklist.prototype.length = function(){
 /**
  * @param int index
  * 
- * @return Object|Tracklist
+ * @return Object
  */
 Tracklist.prototype.current = function(index){
-	if(typeof index === 'undefined'){
-		return this.elements[this.currentIndex];
-	}
-	else if(typeof index === 'number' && index >= 0 && index < this.elements.length){
+	if(typeof index === 'number' && index >= 0 && index < this.elements.length){
 		this.currentIndex = index;
-		return this;
 	}
+	return this.elements[this.currentIndex];
+}
+
+/**
+ * @return Object
+ */
+Tracklist.prototype.first = function(){
+	this.currentIndex = 0;
+	return this.elements[this.currentIndex];
+}
+
+/**
+ * @return Object
+ */
+Tracklist.prototype.prev = function(){
+	this.currentIndex--;
+	return this.elements[this.currentIndex];
+}
+
+/**
+ * @return Object
+ */
+Tracklist.prototype.next = function(){
+	this.currentIndex++;
+	return this.elements[this.currentIndex];
+}
+
+
+/**
+ * @return Object
+ */
+Tracklist.prototype.last = function(){
+	this.currentIndex = this.elements.length - 1;
+	return this.elements[this.currentIndex];
 }
 
 /**
@@ -35,9 +65,45 @@ Tracklist.prototype.current = function(index){
  * 
  * @return Tracklist
  */
-Tracklist.prototype.add = function(element){
-	this.elements.push(element);
-	this.currentIndex = null;
+Tracklist.prototype.add = function(element, position){
+	if(element instanceof Array){
+		if(typeof position === 'number'){
+			this.elements.splice.apply(this.elements, [position, 0].concat(element));
+		}
+		else{
+			this.elements = this.elements.concat(element);
+		}
+	}
+	else{
+		if(typeof position === 'number'){
+			this.elements.splice(position, 0, element);
+		}
+		else{
+			this.elements.push(element);
+		}
+	}
+	return this;
+}
+
+/**
+ * @param mixed index Index or instance of AudioPlayer
+ * 
+ * @return Tracklist
+ */
+Tracklist.prototype.move = function(index, position){
+	if(index instanceof AudioPlayer){
+		for(var i in this.elements){
+			if(this.elements[i].source() === index.source()){
+				index = i;
+				break;
+			}
+		}
+	}
+	
+	var element = this.elements.splice(index, 1)[0];
+	this.elements.splice(position, 0, element);
+	if(index === this.currentIndex) this.currentIndex = position;
+	
 	return this;
 }
 
