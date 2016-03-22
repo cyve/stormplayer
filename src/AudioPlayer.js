@@ -35,24 +35,30 @@ AudioPlayer.prototype.stop = function(){
 	this.audio.currentTime = 0;
 	return this;
 }
-AudioPlayer.prototype.setPosition = function(value){
-	this.audio.currentTime = value;
-	return this;
+AudioPlayer.prototype.position = function(value){
+	if(typeof value === 'undefined'){
+		return this.audio.currentTime;
+	}
+	else{
+		this.audio.currentTime = value;
+		return this;
+	}
 }
-AudioPlayer.prototype.getPosition = function(){
-	return this.audio.currentTime;
+AudioPlayer.prototype.source = function(value){
+	if(typeof value === 'undefined'){
+		return this.audio.src;
+	}
+	else{
+		this.audio.src = value;
+		return this;
+	}
 }
-AudioPlayer.prototype.setSource = function(value){
-	this.audio.src = value;
-	return this;
-}
-AudioPlayer.prototype.getSource = function(){
-	return this.audio.src;
-}
-AudioPlayer.prototype.setVolume = function(value){
-	this.audio.volume = value;
-	return this;
-}
-AudioPlayer.prototype.getVolume = function(){
-	return this.audio.volume;
+AudioPlayer.prototype.volume = function(value){
+	if(typeof value === 'undefined'){
+		return this.audio.volume;
+	}
+	else{
+		this.audio.volume = value;
+		return this;
+	}
 }
