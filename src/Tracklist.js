@@ -7,36 +7,74 @@ var Tracklist = function(){
 	this.elements = [];
 	this.currentIndex = null;
 }
+
+/**
+ * @return int
+ */
 Tracklist.prototype.length = function(){
 	return this.elements.length;
 }
-Tracklist.prototype.current = function(value){
-	if(typeof value === 'undefined'){
+
+/**
+ * @param int index
+ * 
+ * @return Object|Tracklist
+ */
+Tracklist.prototype.current = function(index){
+	if(typeof index === 'undefined'){
 		return this.elements[this.currentIndex];
 	}
-	else if(typeof value === 'number' && value >= 0 && value < this.elements.length){
-		this.currentIndex = value;
+	else if(typeof index === 'number' && index >= 0 && index < this.elements.length){
+		this.currentIndex = index;
 		return this;
 	}
 }
-Tracklist.prototype.add = function(player){
-	this.elements.push(player);
+
+/**
+ * @param object element
+ * 
+ * @return Tracklist
+ */
+Tracklist.prototype.add = function(element){
+	this.elements.push(element);
 	this.currentIndex = null;
 	return this;
 }
-Tracklist.prototype.remove = function(element){
-	if(typeof element === "number"){
-		this.elements.splice(element, 1);
-	}
-	else if(element instanceof AudioPlayer){
+
+/**
+ * @param mixed index Index or instance of AudioPlayer
+ * 
+ * @return Tracklist
+ */
+Tracklist.prototype.remove = function(index){
+	if(index instanceof AudioPlayer){
 		for(var i in this.elements){
-			if(this.elements[i].audioElement.src === element.audioElement.src){
-				this.elements.splice(i, 1);
+			if(this.elements[i].source() === index.source()){
+				index = i;
+				break;
 			}
 		}
 	}
+	
+	if(index === this.currentIndex){
+		this.current().stop();
+	}
+	
+	this.elements.splice(index, 1);
+	
+	if(this.elements.length === 0){
+		this.currentIndex = null;
+	}
+	else if(index >= this.elements.length){
+		this.currentIndex = this.elements.length - 1;
+	}
+	
 	return this;
 }
+
+/**
+ * @return Tracklist
+ */
 Tracklist.prototype.empty = function(){
 	this.elements = [];
 	this.currentIndex = null;
