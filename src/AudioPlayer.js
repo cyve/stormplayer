@@ -3,6 +3,9 @@
  * @license MIT
  */
 
+/**
+ * @return AudioPlayer
+ */
 var AudioPlayer = function(params){
 	this.type = 'html5';
 	this._mute = false;
@@ -10,7 +13,7 @@ var AudioPlayer = function(params){
 	this.audio = document.createElement('audio');
 	this.audio.src = params.src || null;
 	this.events = params.events || {};
-	
+
 	var _this = this;
 	this.audio.addEventListener('playing', function(e){
 		if(typeof _this.events.onplay === 'function'){
@@ -44,6 +47,7 @@ var AudioPlayer = function(params){
  */
 AudioPlayer.prototype.play = function(){
 	this.audio.play();
+
 	return this;
 }
 
@@ -52,6 +56,7 @@ AudioPlayer.prototype.play = function(){
  */
 AudioPlayer.prototype.pause = function(){
 	this.audio.pause();
+
 	return this;
 }
 
@@ -61,6 +66,7 @@ AudioPlayer.prototype.pause = function(){
 AudioPlayer.prototype.stop = function(){
 	this.audio.pause();
 	this.audio.currentTime = 0;
+
 	return this;
 }
 
@@ -72,10 +78,14 @@ AudioPlayer.prototype.position = function(value){
 	if(typeof value === 'undefined'){
 		return this.audio.currentTime;
 	}
-	else{
-		this.audio.currentTime = value;
-		return this;
+
+	if(typeof value !== 'number' || value < 0){
+		throw new Error("Invalid argument value (" + value + ")");
 	}
+
+	this.audio.currentTime = value;
+
+	return this;
 }
 
 /**
@@ -93,10 +103,14 @@ AudioPlayer.prototype.source = function(value){
 	if(typeof value === 'undefined'){
 		return this.audio.src;
 	}
-	else{
-		this.audio.src = value;
-		return this;
+
+	if(typeof value !== 'string'){
+		throw new Error("Invalid argument value (" + value + ")");
 	}
+
+	this.audio.src = value;
+
+	return this;
 }
 
 /**
@@ -107,10 +121,14 @@ AudioPlayer.prototype.volume = function(value){
 	if(typeof value === 'undefined'){
 		return this.audio.volume;
 	}
-	else{
-		this.audio.volume = value;
-		return this;
+
+	if(typeof value !== 'number' || value < 0 || value > 1){
+		throw new Error("Invalid argument value (" + value + ")");
 	}
+
+	this.audio.volume = value;
+
+	return this;
 }
 
 /**
@@ -120,6 +138,7 @@ AudioPlayer.prototype.mute = function(){
 	this._volume = this.audio.volume;
 	this.audio.volume = 0;
 	this._mute = true;
+
 	return this;
 }
 
@@ -129,6 +148,7 @@ AudioPlayer.prototype.mute = function(){
 AudioPlayer.prototype.unmute = function(){
 	this.audio.volume = this._volume;
 	this._mute = false;
+
 	return this;
 }
 

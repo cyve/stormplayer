@@ -3,6 +3,9 @@
  * @license MIT
  */
 
+/**
+ * @return Tracklist
+ */
 var Tracklist = function(){
 	this.elements = [];
 	this.currentIndex = null;
@@ -21,9 +24,13 @@ Tracklist.prototype.length = function(){
  * @return Object
  */
 Tracklist.prototype.current = function(index){
-	if(typeof index === 'number' && index >= 0 && index < this.elements.length){
+	if(typeof index !== 'undefined'){
+		if(typeof index !== 'number' || index < 0 || index >= this.elements.length){
+			throw new Error("Invalid argument index (" + index + ")");
+		}
 		this.currentIndex = index;
 	}
+
 	return this.elements[this.currentIndex];
 }
 
@@ -32,6 +39,7 @@ Tracklist.prototype.current = function(index){
  */
 Tracklist.prototype.first = function(){
 	this.currentIndex = 0;
+
 	return this.elements[this.currentIndex];
 }
 
@@ -40,6 +48,7 @@ Tracklist.prototype.first = function(){
  */
 Tracklist.prototype.prev = function(){
 	this.currentIndex--;
+
 	return this.elements[this.currentIndex];
 }
 
@@ -48,6 +57,7 @@ Tracklist.prototype.prev = function(){
  */
 Tracklist.prototype.next = function(){
 	this.currentIndex++;
+
 	return this.elements[this.currentIndex];
 }
 
@@ -57,6 +67,7 @@ Tracklist.prototype.next = function(){
  */
 Tracklist.prototype.last = function(){
 	this.currentIndex = this.elements.length - 1;
+
 	return this.elements[this.currentIndex];
 }
 
@@ -66,8 +77,12 @@ Tracklist.prototype.last = function(){
  * @return Tracklist
  */
 Tracklist.prototype.add = function(element, position){
+	if(typeof position !== 'undefined' && (typeof position !== 'number' || position < 0 || position > this.elements.length)){
+		throw new Error("Invalid argument position (" + position + ")");
+	}
+
 	if(element instanceof Array){
-		if(typeof position === 'number'){
+		if(typeof position !== 'undefined'){
 			this.elements.splice.apply(this.elements, [position, 0].concat(element));
 		}
 		else{
@@ -82,6 +97,7 @@ Tracklist.prototype.add = function(element, position){
 			this.elements.push(element);
 		}
 	}
+
 	return this;
 }
 
@@ -91,6 +107,10 @@ Tracklist.prototype.add = function(element, position){
  * @return Tracklist
  */
 Tracklist.prototype.move = function(index, position){
+	if(typeof position !== 'number' || position < 0 || position >= this.elements.length){
+		throw new Error("Invalid argument position (" + position + ")");
+	}
+
 	if(index instanceof AudioPlayer){
 		for(var i in this.elements){
 			if(this.elements[i].source() === index.source()){
@@ -99,11 +119,12 @@ Tracklist.prototype.move = function(index, position){
 			}
 		}
 	}
-	
+
 	var element = this.elements.splice(index, 1)[0];
 	this.elements.splice(position, 0, element);
+
 	if(index === this.currentIndex) this.currentIndex = position;
-	
+
 	return this;
 }
 
@@ -113,6 +134,10 @@ Tracklist.prototype.move = function(index, position){
  * @return Tracklist
  */
 Tracklist.prototype.remove = function(index){
+	if(typeof index !== 'number' || index < 0 || index >= this.elements.length){
+		throw new Error("Invalid argument index (" + index + ")");
+	}
+
 	if(index instanceof AudioPlayer){
 		for(var i in this.elements){
 			if(this.elements[i].source() === index.source()){
@@ -121,20 +146,20 @@ Tracklist.prototype.remove = function(index){
 			}
 		}
 	}
-	
+
 	if(index === this.currentIndex){
 		this.current().stop();
 	}
-	
+
 	this.elements.splice(index, 1);
-	
+
 	if(this.elements.length === 0){
 		this.currentIndex = null;
 	}
 	else if(index >= this.elements.length){
 		this.currentIndex = this.elements.length - 1;
 	}
-	
+
 	return this;
 }
 
@@ -144,5 +169,6 @@ Tracklist.prototype.remove = function(index){
 Tracklist.prototype.empty = function(){
 	this.elements = [];
 	this.currentIndex = null;
+
 	return this;
 }
