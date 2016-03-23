@@ -31,6 +31,8 @@ Tracklist.prototype.current = function(index){
 		this.currentIndex = index;
 	}
 
+	if(this.currentIndex === null) this.currentIndex = 0;
+
 	return this.elements[this.currentIndex];
 }
 
@@ -47,7 +49,9 @@ Tracklist.prototype.first = function(){
  * @return Object
  */
 Tracklist.prototype.prev = function(){
-	this.currentIndex--;
+	if(this.currentIndex > 0){
+		this.currentIndex--;
+	}
 
 	return this.elements[this.currentIndex];
 }
@@ -56,7 +60,9 @@ Tracklist.prototype.prev = function(){
  * @return Object
  */
 Tracklist.prototype.next = function(){
-	this.currentIndex++;
+	if(this.currentIndex < this.elements.length - 1){
+		this.currentIndex++;
+	}
 
 	return this.elements[this.currentIndex];
 }
