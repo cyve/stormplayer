@@ -8,36 +8,14 @@
 	<script type="text/javascript" src="../bower_components/jasmine-core/lib/jasmine-core/jasmine.js"></script>
 	<script type="text/javascript" src="../bower_components/jasmine-core/lib/jasmine-core/jasmine-html.js"></script>
 	<script type="text/javascript" src="../bower_components/jasmine-core/lib/jasmine-core/boot.js"></script>
+	<script type="text/javascript" src="../bower_components/js-collection/src/Collection.js"></script>
 
 	<!-- include source files here... -->
 	<script type="text/javascript" src="../src/AudioPlayer.js"></script>
-	<script type="text/javascript" src="../src/Tracklist.js"></script>
 	<script type="text/javascript" src="../src/StormPlayer.js"></script>
-	<script type="text/javascript">
-		var status,progress;
-		var audioPlayer = new AudioPlayer({
-			src:'test.mp3',
-			onplay : function(){
-				status = "playing";
-			},
-			onpause : function(){
-				status = "paused";
-			},
-			onprogress : function(){
-				progress = this.audio.currentTime
-			},
-			onfinish : function(){
-				status = "finished";
-			},
-			onerror : function(){
-				status = "error";
-			}
-		});
-	</script>
 
 	<!-- include spec files here... -->
 	<script type="text/javascript" src="spec/AudioPlayer.js"></script>
-	<script type="text/javascript" src="spec/Tracklist.js"></script>
 	<script type="text/javascript" src="spec/StormPlayer.js"></script>
 </head>
 <body>
