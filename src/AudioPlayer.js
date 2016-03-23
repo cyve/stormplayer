@@ -7,164 +7,204 @@
  * @return AudioPlayer
  */
 var AudioPlayer = function(params){
-	this.type = 'html5';
+	params = params || {};
+	
+	this._type = 'html5';
 	this._mute = false;
 	this._volume = 1;
-	this.audio = document.createElement('audio');
-	this.audio.src = params.src || null;
-	this.events = params.events || {};
+	this._metadata = params.metadata || {};
+	this._events = params.events || {};
+	
+	this._audio = document.createElement('audio');
+	if(params.src){
+		this._audio.src = params.src;
+	}
 
 	var _this = this;
-	this.audio.addEventListener('playing', function(e){
-		if(typeof _this.events.onplay === 'function'){
-			_this.events.onplay.call(_this, e);
+	this._audio.addEventListener('playing', function(e){
+		if(typeof _this._events.onplay === 'function'){
+			_this._events.onplay.call(null, e, _this);
 		}
 	});
-	this.audio.addEventListener('pause', function(e){
-		if(typeof _this.events.onpause === 'function'){
-			_this.events.onpause.call(_this, e);
+	this._audio.addEventListener('pause', function(e){
+		if(typeof _this._events.onpause === 'function'){
+			_this._events.onpause.call(null, e, _this);
 		}
 	});
-	this.audio.addEventListener('timeupdate', function(e){
-		if(typeof _this.events.ontimeupdate === 'function'){
-			_this.events.ontimeupdate.call(_this, e, _this.audio.currentTime);
+	this._audio.addEventListener('timeupdate', function(e){
+		if(typeof _this._events.ontimeupdate === 'function'){
+			_this._events.ontimeupdate.call(null, e, _this);
 		}
 	});
-	this.audio.addEventListener('ended', function(e){
-		if(typeof _this.events.onfinish === 'function'){
-			_this.events.onfinish.call(_this, e);
+	this._audio.addEventListener('ended', function(e){
+		if(typeof _this._events.onfinish === 'function'){
+			_this._events.onfinish.call(null, e, _this);
 		}
 	});
-	this.audio.addEventListener('error', function(e, error){
-		if(typeof _this.events.onerror === 'function'){
-			_this.events.onerror.call(_this, e, error);
+	this._audio.addEventListener('error', function(e, error){
+		if(typeof _this._events.onerror === 'function'){
+			_this._events.onerror.call(null, e, error, _this);
 		}
 	});
 }
 
 /**
+ * Play audio
+ * 
  * @return AudioPlayer
  */
 AudioPlayer.prototype.play = function(){
-	this.audio.play();
+	this._audio.play();
 
 	return this;
 }
 
 /**
+ * Pause audio
+ * 
  * @return AudioPlayer
  */
 AudioPlayer.prototype.pause = function(){
-	this.audio.pause();
+	this._audio.pause();
 
 	return this;
 }
 
 /**
+ * Stop audio
+ * 
  * @return AudioPlayer
  */
 AudioPlayer.prototype.stop = function(){
-	this.audio.pause();
-	this.audio.currentTime = 0;
+	this._audio.pause();
+	this._audio.currentTime = 0;
 
 	return this;
 }
 
 /**
- * @param int value
- * @return int|AudioPlayer
+ * Get/set audio position
+ * 
+ * @param integer value
+ *
+ * @return mixed
+ * @throw Error if argument is invalid
  */
 AudioPlayer.prototype.position = function(value){
 	if(typeof value === 'undefined'){
-		return this.audio.currentTime;
+		return this._audio.currentTime;
 	}
 
 	if(typeof value !== 'number' || value < 0){
 		throw new Error("Invalid argument value (" + value + ")");
 	}
 
-	this.audio.currentTime = value;
+	this._audio.currentTime = value;
 
 	return this;
 }
 
 /**
- * @return int
+ * Get audio duration
+ * 
+ * @return integer
  */
 AudioPlayer.prototype.duration = function(){
-	return this.audio.duration;
+	return this._audio.duration;
 }
 
 /**
+ * Get/set audio source
+ * 
  * @param string value
- * @return string|AudioPlayer
+ * 
+ * @return mixed
+ * @throw Error if argument is invalid
  */
 AudioPlayer.prototype.source = function(value){
 	if(typeof value === 'undefined'){
-		return this.audio.src;
+		return this._audio.src;
 	}
 
 	if(typeof value !== 'string'){
 		throw new Error("Invalid argument value (" + value + ")");
 	}
 
-	this.audio.src = value;
+	this._audio.src = value;
 
 	return this;
 }
 
 /**
- * @param string value
- * @return int|AudioPlayer
+ * Get/set audio volume
+ * 
+ * @param integer value
+ * 
+ * @return mixed
+ * @throw Error if argument is invalid
  */
 AudioPlayer.prototype.volume = function(value){
 	if(typeof value === 'undefined'){
-		return this.audio.volume;
+		return this._audio.volume;
 	}
 
 	if(typeof value !== 'number' || value < 0 || value > 1){
 		throw new Error("Invalid argument value (" + value + ")");
 	}
 
-	this.audio.volume = value;
+	this._audio.volume = value;
 
 	return this;
 }
 
 /**
+ * Mute audio
+ * 
  * @return AudioPlayer
  */
 AudioPlayer.prototype.mute = function(){
-	this._volume = this.audio.volume;
-	this.audio.volume = 0;
+	this._volume = this._audio.volume;
+	this._audio.volume = 0;
 	this._mute = true;
 
 	return this;
 }
 
 /**
+ * Unmute audio
+ * 
  * @return AudioPlayer
  */
 AudioPlayer.prototype.unmute = function(){
-	this.audio.volume = this._volume;
+	this._audio.volume = this._volume;
 	this._mute = false;
 
 	return this;
 }
 
 /**
- * @return AudioPlayer
- */
-AudioPlayer.prototype.toggleMute = function(){
-	if(this._mute){
-		return this.unmute();
-	}
-	return this.mute();
-}
-
-/**
+ * Return audio status
+ * 
  * @return boolean
  */
 AudioPlayer.prototype.isPlaying = function(){
-	return this.audio.currentTime > 0 && !this.audio.paused;
+	return this._audio.currentTime > 0 && !this._audio.paused;
+}
+
+/**
+ * Get type
+ * 
+ * @return Object
+ */
+AudioPlayer.prototype.type = function(){
+	return this._type;
+}
+
+/**
+ * Get metadata
+ * 
+ * @return Object
+ */
+AudioPlayer.prototype.metadata = function(){
+	return this._metadata;
 }
