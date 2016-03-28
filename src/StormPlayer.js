@@ -11,9 +11,8 @@ var StormPlayer = function(){
 	this._mute = false;
 	this._volume = 1;
 	this._duration = 0;
-
-	//this.playerDefaultEvents = params.events ||
 }
+
 StormPlayer.prototype.setTracklist = function(tracks, options) {
 	this.tracklist = new Collection();
 	var track;
@@ -31,6 +30,60 @@ StormPlayer.prototype.setTracklist = function(tracks, options) {
 		//this.tracklist.play(options.current ? 0);
 	}
 };
+
+/**
+ * Prev
+ * 
+ * @return Stormplayer
+ */
+StormPlayer.prototype.prev = function(){
+	if(this.tracklist.length){
+		var current = this.tracklist.current();
+		if(current.isPlaying()){
+			current.stop();
+		}
+		
+		if(this.tracklist.index === 0){
+			this.tracklist.current().play();
+		}
+		else{
+			this.tracklist.prev().play();
+		}
+	}
+	
+	return this;
+}
+
+/**
+ * Next
+ * 
+ * @return Stormplayer
+ */
+StormPlayer.prototype.next = function(){
+	if(this.tracklist.length){
+		var current = this.tracklist.current();
+		if(current.isPlaying()){
+			current.stop();
+		}
+		
+		if(this.random()){
+			var randomIndex = parseInt(Math.random() * this.tracklist.length, 10);
+			this.tracklist.current(randomIndex).play();
+		}
+		else{
+			if(this.tracklist.index === this.tracklist.length-1){
+				if(this.repeat()){
+					this.tracklist.first().play();
+				}
+			}
+			else{
+				this.tracklist.next().play();
+			}
+		}
+	}
+	
+	return this;
+}
 
 /**
  * Get duration
