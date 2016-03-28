@@ -1,11 +1,14 @@
 {
   "name": "cyve/stormplayer",
-  "description": "JavaScript audio player",
+  "description": "HTML5 media player (support multiple embedded sources)",
   "license": "MIT",
   "authors": [
     "Cyril Vmd <cyril@cyrilwebdesign.com>"
   ],
   "dependencies": {
+    "cyve/js-collection": "https://github.com/cyve/js-collection.git"
+  },
+  "devDependencies": {
     "jasmine-core": "^2.4.1"
   }
 }
