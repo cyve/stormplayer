@@ -15,6 +15,15 @@ var StormPlayer = function(){
 
 StormPlayer.prototype.setTracklist = function(tracks, options) {
 	this.tracklist = new Collection();
+	this.addTracklist(tracks);
+	
+	if(options.autoplay){
+		var index = options.index || 0;
+		this.tracklist.current(index).play();
+	}
+};
+
+StormPlayer.prototype.addTracklist = function(tracks) {
 	var track;
 	for(var i in tracks){
 		track = tracks[i];
@@ -24,10 +33,6 @@ StormPlayer.prototype.setTracklist = function(tracks, options) {
 		else if(track.src){
 			this.tracklist.add(new AudioPlayer(track));
 		}
-	}
-
-	if(options.autoplay){
-		//this.tracklist.play(options.current ? 0);
 	}
 };
 
