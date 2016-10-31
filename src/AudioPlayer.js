@@ -15,10 +15,10 @@ var AudioPlayer = function(params){
 	this._metadata = params.metadata || {};
 	this._events = params.events || {};
 	
-	this._audio = document.createElement('audio');
-	if(params.src){
-		this._audio.src = params.src;
-	}
+	this._audio = new Audio(params.src);
+	// if(params.src){
+		// this._audio.src = params.src;
+	// }
 
 	var _this = this;
 	this._audio.addEventListener('playing', function(e){
