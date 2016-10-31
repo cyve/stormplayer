@@ -6,7 +6,7 @@
     "Cyril Vmd <cyril@cyrilwebdesign.com>"
   ],
   "dependencies": {
-    "cyve/js-collection": "https://github.com/cyve/js-collection.git"
+    "cyve-js-collection": "https://github.com/cyve/js-collection.git"
   },
   "devDependencies": {
     "jasmine-core": "^2.4.1"
