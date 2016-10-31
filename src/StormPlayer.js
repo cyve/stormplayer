@@ -21,8 +21,8 @@ StormPlayer.prototype.setTracklist = function(tracks, options) {
 		if(track instanceof AudioPlayer){
 			this.tracklist.add(track);
 		}
-		else{
-			this.tracklist.add(new AudioPlayer({ src: track.src}));
+		else if(track.src){
+			this.tracklist.add(new AudioPlayer(track));
 		}
 	}
 
