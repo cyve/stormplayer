@@ -1,6 +1,7 @@
 /**
  * @author Cyril Vermande (cyril@cyrilwebdesign.com)
  * @license MIT
+ * @copyright All rights reserved 2016 Cyril Vermande
  */
 
 var StormPlayer = function(){
@@ -14,6 +15,8 @@ var StormPlayer = function(){
 }
 
 StormPlayer.prototype.setTracklist = function(tracks, options) {
+	if(this.tracklist.length > 0 && this.tracklist.current().isPlaying()) this.tracklist.current().stop();
+	
 	this.tracklist = new Collection();
 	this.addTracklist(tracks);
 	

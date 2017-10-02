@@ -1,6 +1,7 @@
 /**
  * @author Cyril Vermande (cyril@cyrilwebdesign.com)
  * @license MIT
+ * @copyright All rights reserved 2016 Cyril Vermande
  */
 
 /**
@@ -14,11 +15,7 @@ var AudioPlayer = function(params){
 	this._volume = 1;
 	this._metadata = params.metadata || {};
 	this._events = params.events || {};
-	
 	this._audio = new Audio(params.src);
-	// if(params.src){
-		// this._audio.src = params.src;
-	// }
 
 	var _this = this;
 	this._audio.addEventListener('playing', function(e){
