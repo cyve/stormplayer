@@ -9,13 +9,16 @@
  */
 var AudioPlayer = function(params){
 	params = params || {};
-	
+
 	this._type = 'html5';
 	this._mute = false;
 	this._volume = 1;
 	this._metadata = params.metadata || {};
 	this._events = params.events || {};
-	this._audio = new Audio(params.src);
+
+	this._audio = new Audio();
+	this._audio.preload = 'none';
+	this._audio.src = params.src;
 
 	var _this = this;
 	this._audio.addEventListener('playing', function(e){
