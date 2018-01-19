@@ -9,6 +9,7 @@
     "cyve-js-collection": "https://github.com/cyve/js-collection.git"
   },
   "devDependencies": {
-    "jasmine-core": "^2.4.1"
+    "jasmine-core": "^2.4.1",
+    "youtube-iframe-api": "^0.0.1"
   }
 }
