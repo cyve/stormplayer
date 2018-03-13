@@ -2,6 +2,7 @@
  * @author Cyril Vermande (cyril@cyrilwebdesign.com)
  * @license MIT
  * @copyright All rights reserved 2018 Cyril Vermande
+ * @see https://developers.google.com/youtube/iframe_api_reference
  */
 
 /**
@@ -17,19 +18,24 @@ var YoutubePlayer = function(params){
     this._events = params.events || {};
 
     this._audio = null;
-
-    var _this = this;
-
-    this._watcher = null;
     this._src = params.src || null;
+    this._watcher = null;
+
     this.init = function(){
         var iframe = document.createElement('iframe');
         iframe.id = 'youtube-player';
-        iframe.src = params.src + '?enablejsapi=1&autoplay=1&controls=0&showinfo=0';
+        iframe.src = this.getEmbedMrl(this._src) + '?enablejsapi=1&autoplay=1&controls=0&showinfo=0';
         iframe.className = 'youtube-player';
         document.body.append(iframe);
 
         this._audio = new YT.Player('youtube-player');
+        this._audio.addEventListener('onReady', function(e){
+            _this._watcher = setInterval(function(){
+                if(typeof _this._events.ontimeupdate === 'function' && _this._audio.getPlayerState() === YT.PlayerState.PLAYING){
+                    _this._events.ontimeupdate.call(null, null, _this);
+                }
+            }, 500);
+        });
         this._audio.addEventListener('onStateChange', function(e){
             switch(e.data){
                 case YT.PlayerState.PLAYING:
@@ -55,18 +61,46 @@ var YoutubePlayer = function(params){
                 _this._events.onerror.call(null, e, e.data, _this);
             }
         });
-        _this._watcher = setInterval(function(){
-            if(typeof _this._events.ontimeupdate === 'function' && _this._audio.getPlayerState() === YT.PlayerState.PLAYING){
-                _this._events.ontimeupdate.call(null, null, _this);
-            }
-        }, 500);
     };
     this.clear = function(){
-        clearInterval(this._watcher);
-        this._audio.destroy();
+        if(this._watcher){
+            clearInterval(this._watcher);
+            this._watcher = null;
+        }
+
+        if(this._audio){
+            this._audio.destroy();
+            this._audio = null;
+        }
     };
 
-    return this;
+    var _this = this;
+};
+
+/**
+ * Get embed URL
+ *
+ * @param string mrl
+ * @return string
+ */
+YoutubePlayer.prototype.getEmbedMrl = function(mrl){
+    if(window.URL) var url = new URL(mrl);
+    else{
+        var url = document.createElement('a');
+            url.href = mrl;
+    }
+
+    if(url.pathname.match(/^\/embed\//)){
+        return mrl;
+    }
+    else if(url.pathname.match(/^\/watch/)){
+        return url.origin + '/embed/' + url.searchParams.get('v');
+    }
+    else if(url.hostname === 'youtu.be'){
+        return url.origin + '/embed' + url.pathname;
+    }
+
+    console.error('Invlid URL');
 };
 
 /**
@@ -209,7 +243,7 @@ YoutubePlayer.prototype.unmute = function(){
  * @return boolean
  */
 YoutubePlayer.prototype.isPlaying = function(){
-    return this._audio.getPlayerState() === YT.PlayerState.PLAYING;
+    return this._audio && this._audio.getPlayerState() === YT.PlayerState.PLAYING;
 };
 
 /**
