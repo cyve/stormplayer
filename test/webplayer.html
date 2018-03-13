@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>StormPlayer</title>
+		<meta charset="UTF-8">
+	</head>
+	<body>
+		<div id="player-ctn">
+			<div id="player-infos">
+				<div>
+					<span id="player-track-name"></span>
+				</div>
+				<div>
+					<span id="player-track-currenttime">00:00</span>
+					<progress id="player-track-progress" value="0" max="100">0%</progress>
+					<span id="player-track-duration">00:00</span>
+				</div>
+			</div>
+			<div id="player-controls">
+				<button id="player-prev-btn" type="button">prev</button>
+				<button id="player-play-btn" type="button">play</button>
+				<button id="player-pause-btn" type="button" style="display:none;">pause</button>
+				<button id="player-next-btn" type="button">next</button>
+				<button id="player-mute-btn" type="button">mute</button>
+				<button id="player-unmute-btn" type="button" style="display:none;">unmute</button>
+				<button id="player-repeat-btn" type="button">repeat</button>
+				<button id="player-unrepeat-btn" type="button" style="display:none;">no repeat</button>
+				<button id="player-random-btn" type="button">random</button>
+				<button id="player-unrandom-btn" type="button" style="display:none;">no random</button>
+				<input id="player-volume-range" type="range" value="1" max="1" min="0" step=".1">
+			</div>
+			<div id="player-tracklist-ctn">
+				<ul id="player-tracklist"></ul>
+			</div>
+		</div>
+		<div id="dz-root"></div>
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
+		<script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="../bower_components/cyve-js-collection/src/Collection.js"></script>
+		<script type="text/javascript" src="../bower_components/youtube-iframe-api/youtube.iframe-api.js"></script>
+		<script src="https://connect.soundcloud.com/sdk/sdk-3.3.0.js"></script>
+		<script src="https://e-cdns-files.dzcdn.net/js/min/dz.js"></script>
+		<script type="text/javascript" src="../src/AudioPlayer.js"></script>
+		<script type="text/javascript" src="../src/DeezerPlayer.js"></script>
+		<script type="text/javascript" src="../src/YoutubePlayer.js"></script>
+		<script type="text/javascript" src="../src/SoundcloudPlayer.js"></script>
+		<script type="text/javascript" src="../src/StormPlayer.js"></script>
+		<script type="text/javascript">
+			var tracks = [
+				{ name: "Bebly - Une putain d'envie de tricher", mrl: "http://cdn.sonducoin.fr/audio/bebly_l-intervalle/MDUtdW5lLXB1dGFpbi1kLWVudmllLWRlLXRyaWNoZXIubXAz", provider: 'sonducoin' },
+				{ name: "I am a monster - Doctor said", mrl: "http://cdn.sonducoin.fr/audio/i-am-a-monster_chaos-minded-but-feeling-great/MDEtQXVkaW9UcmFjayAwMV8xMjhrYnBzLm1wMw==", provider: 'sonducoin' },
+				{ name: "Blue Box - Loop", mrl: "https://api.soundcloud.com/tracks/103548740", provider: 'soundcloud' },
+				{ name: "Dusk Totem - Dear mother", mrl: "https://soundcloud.com/dusktotem/dearmother", provider: 'soundcloud' },
+				{ name: "Los Tres Puntos - La réalité", mrl: "https://www.youtube.com/embed/M6urcJzMK6w", provider: 'youtube' },
+				{ name: "Dusk Totem - Love", mrl: "https://www.youtube.com/embed/5y6t_yTt7E4", provider: 'youtube' },
+				{ name: "Therapie Taxi - Coma idyllique", mrl: "https://www.deezer.com/fr/track/426047982", provider: 'deezer' },
+				{ name: "One Direction - One thing", mrl: "https://www.deezer.com/fr/track/16014610", provider: 'deezer' },
+				{ name: "Berceuse - Derviche tourneur", mrl: "http://cdn.sonducoin.fr/audio/berceuse_berceuse/MDEtZGVydmljaGUtdG91cm5ldXJfMTI4a2Jwcy5tcDM=", provider: 'sonducoin' }
+			];
+			
+			var events = {
+				onplay: function(e, element){
+					$('#player-play-btn').hide();
+					$('#player-pause-btn').show();
+					$('#player-track-name').html(element.metadata().name);
+					$('#player-track-duration').html(element.duration());
+				},
+				onpause: function(e, element){
+					$('#player-play-btn').show();
+					$('#player-pause-btn').hide();
+				},
+				ontimeupdate: function(e, element){
+					$('#player-play-btn').hide();
+					$('#player-pause-btn').show();
+					$('#player-track-name').html(element.metadata().name);
+					
+					var duration = element.duration(),
+						time = element.position(),
+						progress = time / duration * 100;
+					$('#player-track-currenttime').html(parseInt(time, 10));
+					$('#player-track-duration').html(parseInt(duration, 10));
+					$('#player-track-progress').attr('value', parseInt(progress, 10));
+				},
+				onfinish: function(e, element){
+					$('#player-play-btn').show()
+					$('#player-pause-btn').hide()
+					player.next();
+				}
+			};
+			
+			var player = new StormPlayer();
+			for(var i in tracks){
+				switch(tracks[i].provider){
+					case 'youtube': player.tracklist.add(new YoutubePlayer({ src: tracks[i].mrl, provider: tracks[i].provider, metadata: { name: tracks[i].name }, events: events })); break;
+					case 'soundcloud': player.tracklist.add(new SoundcloudPlayer({ src: tracks[i].mrl, provider: tracks[i].provider, metadata: { name: tracks[i].name }, events: events })); break;
+					case 'deezer': player.tracklist.add(new DeezerPlayer({ src: tracks[i].mrl, provider: tracks[i].provider, metadata: { name: tracks[i].name }, events: events })); break;
+					default: player.tracklist.add(new AudioPlayer({ src: tracks[i].mrl, provider: tracks[i].provider, metadata: { name: tracks[i].name }, events: events }));
+				}
+			}
+			
+			$('#player-play-btn').click(function(e){
+				e.preventDefault();
+				player.tracklist.current().play();
+			});
+			$('#player-pause-btn').click(function(e){
+				e.preventDefault();
+				player.tracklist.current().pause();
+			})
+			$('#player-prev-btn').click(function(e){
+				e.preventDefault();
+				//player.tracklist.current().stop();
+				//player.tracklist.prev().play();
+				player.prev();
+			})
+			$('#player-next-btn').click(function(e){
+				e.preventDefault();
+				//player.tracklist.current().stop();
+				//player.tracklist.next().play();
+				player.next();
+			});
+			$('#player-mute-btn').click(function(e){
+				e.preventDefault();
+				player.mute(true);
+				$('#player-mute-btn').hide();
+				$('#player-unmute-btn').show();
+			});
+			$('#player-unmute-btn').click(function(e){
+				e.preventDefault();
+				player.mute(false);
+				$('#player-mute-btn').show();
+				$('#player-unmute-btn').hide();
+			});
+			$('#player-volume-range').change(function(e){
+				e.preventDefault();
+				player.volume(parseFloat($(this).val(), 10));
+			});
+			$('#player-repeat-btn').click(function(e){
+				e.preventDefault();
+				player.repeat(true);
+				$('#player-repeat-btn').hide();
+				$('#player-unrepeat-btn').show();
+			});
+			$('#player-unrepeat-btn').click(function(e){
+				e.preventDefault();
+				player.repeat(false);
+				$('#player-repeat-btn').show();
+				$('#player-unrepeat-btn').hide();
+			});
+			$('#player-random-btn').click(function(e){
+				e.preventDefault();
+				player.random(true);
+				$('#player-random-btn').hide();
+				$('#player-unrandom-btn').show();
+			});
+			$('#player-unrandom-btn').click(function(e){
+				e.preventDefault();
+				player.random(false);
+				$('#player-random-btn').show();
+				$('#player-unrandom-btn').hide();
+			});
+			
+			
+			$('#player-tracklist').sortable({
+				cursor: 'move',
+				axis: 'y',
+				containment: 'parent',
+				placeholder: 'dropzone',
+				start: function(event, ui){
+					$(ui.item).data('startindex', ui.item.index());
+				},
+				stop: function(event, ui){
+					player.tracklist.move(ui.item.data('startindex'), ui.item.index());
+				}
+			});
+			$('#player-tracklist').on('click', 'a[data-action="play"]', function(e, a){
+				e.preventDefault();
+				var index = parseInt($(this).attr('data-index'), 10);
+				player.tracklist.current().stop();
+				player.tracklist.current(index).play();
+			});
+			$('#player-tracklist').on('click', 'a[data-action="remove"]', function(e, a){
+				e.preventDefault();
+				var index = parseInt($(this).attr('data-index'), 10);
+				
+				if(player.tracklist.index === index){
+					player.tracklist.next().play();
+				}
+				
+				player.tracklist.remove(index);
+				$(this).parent().remove();
+			});
+			
+			$(document).ready(function(){
+				var html = '';
+				for(var i=0,l=player.tracklist.length; i<l; i++){
+					html += '<li draggable="true">' + player.tracklist.get(i).metadata().name + ' <a href="#" data-action="play" data-index="' + i + '">play</a> <a href="#" data-action="remove" data-index="' + i + '">remove</a></li>'
+				}
+				$('#player-tracklist').html(html);
+
+				SC.initialize({client_id: ''});
+				DZ.init({appId: '', channelUrl: '', player: {} });
+			});
+		</script>
+	</body>
+</html>
