@@ -3,7 +3,7 @@
   "description": "HTML5 media player (support multiple embedded sources)",
   "license": "MIT",
   "authors": [
-    "Cyril Vmd <cyril@cyrilwebdesign.com>"
+    "Cyril Vermande"
   ],
   "dependencies": {
     "cyve-js-collection": "https://github.com/cyve/js-collection.git"
