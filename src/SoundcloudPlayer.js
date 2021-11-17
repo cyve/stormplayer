@@ -1,27 +1,28 @@
 /**
- * @return SoundcloudPlayer
+ * @var SoundcloudPlayer
+ * @see https://developer.soundcloud.com/docs/api/sdks#streaming
  */
 var SoundcloudPlayer = function(params){
     params = params || {};
 
-    this._type = 'soundcloud';
-    this._mute = false;
-    this._volume = 1;
-    this._metadata = params.metadata || {};
-    this._events = params.events || {};
+    this.track = params.track || {};
+    this.context = params.context || null;
+    this.clientId = 'aeb8608f5c352e40a7a8ffddc9265c46';
 
+    this._mute = false;
+    this._volume = 0.5;
+    this._events = params.events || {};
     this._audio = null;
-    this._src = params.src || null;
+    this._src = null;
 
     this.init = function(){
-        SC.resolve(_this._src).then(function(response){
-            if(response.kind !== 'track') return console.error('Invalid MRL ' + _this._src);
-            
-            _this._src = '/tracks/' + response.id;
-            
-            SC.stream(_this._src).then(function(player){
+        SC.initialize({ client_id: this.clientId });
+        this.resolveMrl(params.src).then(function(response){
+            SC.stream(response.mrl).then(function(player){
                 _this._audio = player;
                 _this._audio.play();
+                _this._audio.setVolume(_this._volume);
+                _this._src = response.mrl;
                 
                 _this._audio.on('play-start', function(e){
                     if(typeof _this._events.onplay === 'function'){
@@ -39,7 +40,7 @@ var SoundcloudPlayer = function(params){
                     }
                 });
                 _this._audio.on('time', function(e){
-                    if(typeof _this._events.ontimeupdate === 'function'){
+                    if(typeof _this._events.ontimeupdate === 'function' && this.isPlaying()){
                         _this._events.ontimeupdate.call(null, e, _this);
                     }
                 });
@@ -54,10 +55,39 @@ var SoundcloudPlayer = function(params){
                     }
                 });
             });
+        }).catch(function (error) {
+            console.error(error);
+
+            if (error.status === 404) {
+                fetch('/api/tasks', {
+                    method: 'post',
+                    headers: new Headers({ 'Content-Type': 'application/json' }),
+                    body: JSON.stringify({
+                        name: 'Migrate unavailable track #' + _this.track.id,
+                        type: 'task',
+                        action: 'https://www.sonducoin.fr/admin/?action=edit&entity=Track&id=' + _this.track.id,
+                    })
+                });
+            }
         });
     };
 
     var _this = this;
+};
+
+/**
+ * Resolve MRL
+ *
+ * @return SoundcloudPlayer
+ */
+SoundcloudPlayer.prototype.resolveMrl = function(mrl){
+    return SC.resolve(mrl + '?client_id=' + this.clientId).then(function(response) {
+        if (response.kind !== 'track') {
+            return Promise.reject('Invalid MRL "' + mrl + '"');
+        }
+
+        return Promise.resolve({ mrl: '/tracks/' + response.id });
+    });
 };
 
 /**
@@ -78,6 +108,8 @@ SoundcloudPlayer.prototype.play = function(){
  * @return SoundcloudPlayer
  */
 SoundcloudPlayer.prototype.pause = function(){
+    if(!this._audio) return this;
+
     this._audio.pause();
 
     return this;
@@ -89,6 +121,8 @@ SoundcloudPlayer.prototype.pause = function(){
  * @return SoundcloudPlayer
  */
 SoundcloudPlayer.prototype.stop = function(){
+    if(!this._audio) return this;
+
     this._audio.pause();
     this._audio.seek(0);
 
@@ -104,6 +138,8 @@ SoundcloudPlayer.prototype.stop = function(){
  * @throw Error if argument is invalid
  */
 SoundcloudPlayer.prototype.position = function(value){
+    if(!this._audio) return this;
+
     if(typeof value === 'undefined'){
         return parseInt(this._audio.currentTime() / 1000, 10);
     }
@@ -123,6 +159,8 @@ SoundcloudPlayer.prototype.position = function(value){
  * @return integer
  */
 SoundcloudPlayer.prototype.duration = function(){
+    if(!this._audio) return 0;
+
     return  parseInt(this._audio.getDuration() / 1000, 10);
 };
 
@@ -135,6 +173,8 @@ SoundcloudPlayer.prototype.duration = function(){
  * @throw Error if argument is invalid
  */
 SoundcloudPlayer.prototype.source = function(value){
+    if(!this._audio) return this;
+
     if(typeof value === 'undefined'){
         return this._src;
     }
@@ -157,6 +197,8 @@ SoundcloudPlayer.prototype.source = function(value){
  * @throw Error if argument is invalid
  */
 SoundcloudPlayer.prototype.volume = function(value){
+    if(!this._audio) return this;
+
     if(typeof value === 'undefined'){
         return this._audio.getVolume();
     }
@@ -176,6 +218,8 @@ SoundcloudPlayer.prototype.volume = function(value){
  * @return SoundcloudPlayer
  */
 SoundcloudPlayer.prototype.mute = function(){
+    if(!this._audio) return this;
+
     this._volume = this._audio.getVolume();
     this._audio.setVolume(0);
     this._mute = true;
@@ -189,6 +233,8 @@ SoundcloudPlayer.prototype.mute = function(){
  * @return SoundcloudPlayer
  */
 SoundcloudPlayer.prototype.unmute = function(){
+    if(!this._audio) return this;
+
     this._audio.volume = this._volume;
     this._mute = false;
 
@@ -202,22 +248,4 @@ SoundcloudPlayer.prototype.unmute = function(){
  */
 SoundcloudPlayer.prototype.isPlaying = function(){
     return this._audio && this._audio.isActuallyPlaying();
-};
-
-/**
- * Get type
- *
- * @return Object
- */
-SoundcloudPlayer.prototype.type = function(){
-    return this._type;
-};
-
-/**
- * Get metadata
- *
- * @return Object
- */
-SoundcloudPlayer.prototype.metadata = function(){
-    return this._metadata;
 };

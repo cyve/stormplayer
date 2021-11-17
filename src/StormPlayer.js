@@ -1,60 +1,89 @@
 /**
+ * @var StormPlayer
  */
-
-var StormPlayer = function(){
-    this.tracklist = new Collection();
+var StormPlayer = function(options){
+    this.tracklist = new StormPlayerTracklist();
 
     this._repeat = false;
     this._random = false;
     this._mute = false;
-    this._volume = 1;
     this._duration = 0;
+    this._events = options.events || {};
 };
 
-StormPlayer.providers = {
-    SONDUCOIN: 'sonducoin',
-    SOUNDCLOUD: 'soundcloud',
-    YOUTUBE: 'youtube'
+/**
+ * @param string url URL to resolve to get list of tracks
+ * @param object options List of available options: autoplay (bool), index (int), context (string), append (bool)
+ * @return void
+ */
+StormPlayer.prototype.loadTracklistFromUrl = function(url, options){
+    var _this = this;
+
+    fetch(url).then(function (response) {
+        return response.json();
+    }).then(function (content) {
+        var tracks = content.tracks || [content];
+
+        if (!options.append) {
+            _this.setTracklist(tracks, options);
+        } else {
+            _this.addTracklist(tracks, options);
+        }
+    });
 };
 
+/**
+ * @param array tracks
+ * @param object options List of available options: autoplay (bool), index (int)
+ * @return void
+ */
 StormPlayer.prototype.setTracklist = function(tracks, options){
     if(this.tracklist.length > 0 && this.tracklist.current().isPlaying()) this.tracklist.current().stop();
-    
-    this.tracklist = new Collection();
-    this.addTracklist(tracks);
-    
+
+    this.tracklist.clear();
+    this.addTracklist(tracks, options);
+
     if(options.autoplay){
         var index = options.index || 0;
         this.tracklist.current(index).play();
     }
 };
 
-StormPlayer.prototype.addTracklist = function(tracks){
-    var track;
-    for(var i in tracks){
+/**
+ * @param array tracks
+ * @return void
+ */
+StormPlayer.prototype.addTracklist = function(tracks, options){
+    for(var track,params,i=0,l=tracks.length; i<l; i++){
         track = tracks[i];
-        if(track instanceof AudioPlayer || track instanceof YoutubePlayer || track instanceof SoundcloudPlayer){
+        if(track instanceof AudioPlayer || track instanceof YoutubePlayer || track instanceof SoundcloudPlayer || track instanceof BandcampPlayer){
             this.tracklist.add(track);
         }
-        else if(track.src){
-            switch(track.provider){
-                case StormPlayer.providers.YOUTUBE:
-                    this.tracklist.add(new YoutubePlayer(track));
-                    break
-                case StormPlayer.providers.SOUNDCLOUD:
-                    this.tracklist.add(new SoundcloudPlayer(track));
-                    break;
-                default:
-                    this.tracklist.add(new AudioPlayer(track));
+        else if(track.audio.contentUrl){
+            params = {
+                src: track.audio.contentUrl,
+                track: track,
+                events: this._events,
+                context: options.context || null,
+            };
+
+            if (params.src.match(/youtube.com/)) {
+                this.tracklist.add(new YoutubePlayer(params));
+            } else if (params.src.match(/soundcloud.com/)) {
+                this.tracklist.add(new SoundcloudPlayer(params));
+            } else if (params.src.match(/bandcamp.com/)) {
+                this.tracklist.add(new BandcampPlayer(params));
+            } else if (params.src.match(/audio.sonducoin.fr/)) {
+                this.tracklist.add(new FunkwhalePlayer(params));
+            } else {
+                this.tracklist.add(new AudioPlayer(params));
             }
         }
     }
 };
 
 /**
- * Prev
- * 
- * @return Stormplayer
+ * @return void
  */
 StormPlayer.prototype.prev = function(){
     if(this.tracklist.length){
@@ -67,19 +96,15 @@ StormPlayer.prototype.prev = function(){
             this.tracklist.prev().play();
         }
     }
-    
-    return this;
-}
+};
 
 /**
- * Next
- * 
- * @return Stormplayer
+ * @return void
  */
 StormPlayer.prototype.next = function(){
     if(this.tracklist.length){
         this.tracklist.current().stop();
-        
+
         if(this.random()){
             var randomIndex = parseInt(Math.random() * this.tracklist.length, 10);
             this.tracklist.current(randomIndex).play();
@@ -89,22 +114,20 @@ StormPlayer.prototype.next = function(){
                 if(this.repeat()){
                     this.tracklist.first().play();
                 }
+                else{
+                    document.dispatchEvent(new CustomEvent('ontracklistend', { detail: this.tracklist.current().track }));
+                }
             }
             else{
                 this.tracklist.next().play();
             }
         }
     }
-    
-    return this;
-}
+};
 
 /**
- * Get duration
- * 
- * @param boolean update Set true to update duration
- * 
- * @return integer
+ * @param bool update Set true to update duration
+ * @return int
  */
 StormPlayer.prototype.duration = function(update){
     if(typeof update !== 'undefined' && update){
@@ -116,15 +139,11 @@ StormPlayer.prototype.duration = function(update){
     }
     
     return this._duration;
-}
+};
 
 /**
- * Get/set repeat
- * 
- * @param boolean value
- * 
- * @return mixed
- * @throw Error if argument is invalid
+ * @param bool value
+ * @return bool|void
  */
 StormPlayer.prototype.repeat = function(value){
     if(typeof value === 'undefined'){
@@ -136,17 +155,11 @@ StormPlayer.prototype.repeat = function(value){
     }
 
     this._repeat = value;
-
-    return this;
-}
+};
 
 /**
- * Get/set random
- * 
- * @param boolean value
- * 
- * @return mixed
- * @throw Error if argument is invalid
+ * @param bool value
+ * @return bool|void
  */
 StormPlayer.prototype.random = function(value){
     if(typeof value === 'undefined'){
@@ -158,21 +171,15 @@ StormPlayer.prototype.random = function(value){
     }
 
     this._random = value;
-
-    return this;
-}
+};
 
 /**
- * Get/set volume
- * 
- * @param integer value
- * 
- * @return mixed
- * @throw Error if argument is invalid
+ * @param int value
+ * @return int|void
  */
 StormPlayer.prototype.volume = function(value){
     if(typeof value === 'undefined'){
-        return this._volume;
+        return this.tracklist.current().volume();
     }
 
     if(typeof value !== 'number' || value < 0 || value > 1){
@@ -182,19 +189,11 @@ StormPlayer.prototype.volume = function(value){
     this.tracklist.forEach(function(element){
         element.volume(value);
     });
-
-    this._volume = value;
-
-    return this;
-}
+};
 
 /**
- * Mute/unmute
- * 
- * @param boolean value
- * 
- * @return mixed
- * @throw Error if argument is invalid
+ * @param bool value
+ * @return bool|void
  */
 StormPlayer.prototype.mute = function(value){
     if(typeof value === 'undefined'){
@@ -216,6 +215,4 @@ StormPlayer.prototype.mute = function(value){
         });
     }
     this._mute = value;
-
-    return this;
-}
+};

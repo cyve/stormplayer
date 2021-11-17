@@ -1,15 +1,16 @@
 /**
- * @return DeezerPlayer
+ * @var DeezerPlayer
+ * @see https://developers.deezer.com/sdk/javascript
  */
 var DeezerPlayer = function(params){
     params = params || {};
 
-    this._type = 'deezer';
+    this.track = params.track || {};
+    this.context = params.context || null;
+
     this._mute = false;
     this._volume = 1;
-    this._metadata = params.metadata || {};
     this._events = params.events || {};
-
     this._audio = null;
     this._src = params.src || null;
 
@@ -54,7 +55,7 @@ var DeezerPlayer = function(params){
         });
 
         DZ.player.playTracks([this._audio.src]);
-    }
+    };
 
     var _this = this;
 };
@@ -98,6 +99,8 @@ DeezerPlayer.prototype.play = function(){
  * @return DeezerPlayer
  */
 DeezerPlayer.prototype.pause = function(){
+    if(!this._audio) return this;
+
     DZ.player.pause();
 
     return this;
@@ -109,6 +112,8 @@ DeezerPlayer.prototype.pause = function(){
  * @return DeezerPlayer
  */
 DeezerPlayer.prototype.stop = function(){
+    if(!this._audio) return this;
+
     DZ.player.pause();
     DZ.player.seek(0);
 
@@ -124,6 +129,8 @@ DeezerPlayer.prototype.stop = function(){
  * @throw Error if argument is invalid
  */
 DeezerPlayer.prototype.position = function(value){
+    if(!this._audio) return this;
+
     if(typeof value === 'undefined'){
         return this._audio.currentTime;
     }
@@ -143,6 +150,8 @@ DeezerPlayer.prototype.position = function(value){
  * @return integer
  */
 DeezerPlayer.prototype.duration = function(){
+    if(!this._audio) return 0;
+
     return this._audio.duration;
 };
 
@@ -155,6 +164,8 @@ DeezerPlayer.prototype.duration = function(){
  * @throw Error if argument is invalid
  */
 DeezerPlayer.prototype.source = function(value){
+    if(!this._audio) return this;
+
     if(typeof value === 'undefined'){
         return this._audio.src;
     }
@@ -178,6 +189,8 @@ DeezerPlayer.prototype.source = function(value){
  * @throw Error if argument is invalid
  */
 DeezerPlayer.prototype.volume = function(value){
+    if(!this._audio) return this;
+
     if(typeof value === 'undefined'){
         return DZ.player.getVolume() / 100;
     }
@@ -197,6 +210,8 @@ DeezerPlayer.prototype.volume = function(value){
  * @return DeezerPlayer
  */
 DeezerPlayer.prototype.mute = function(){
+    if(!this._audio) return this;
+
     DZ.player.setMute(true);
     this._mute = true;
 
@@ -209,6 +224,8 @@ DeezerPlayer.prototype.mute = function(){
  * @return DeezerPlayer
  */
 DeezerPlayer.prototype.unmute = function(){
+    if(!this._audio) return this;
+
     DZ.player.setMute(false);
     this._mute = false;
 
@@ -221,23 +238,5 @@ DeezerPlayer.prototype.unmute = function(){
  * @return boolean
  */
 DeezerPlayer.prototype.isPlaying = function(){
-    return DZ.player.isPlaying();
-};
-
-/**
- * Get type
- *
- * @return Object
- */
-DeezerPlayer.prototype.type = function(){
-    return this._type;
-};
-
-/**
- * Get metadata
- *
- * @return Object
- */
-DeezerPlayer.prototype.metadata = function(){
-    return this._metadata;
+    return this._audio && DZ.player.isPlaying();
 };

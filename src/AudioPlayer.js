@@ -1,18 +1,19 @@
 /**
- * @return AudioPlayer
+ * @var AudioPlayer
  */
 var AudioPlayer = function(params){
     params = params || {};
 
-    this._type = 'html5';
-    this._mute = false;
-    this._volume = 1;
-    this._metadata = params.metadata || {};
-    this._events = params.events || {};
+    this.track = params.track || {};
+    this.context = params.context || null;
 
+    this._mute = false;
+    this._volume = 0.5;
+    this._events = params.events || {};
     this._audio = new Audio();
     this._audio.preload = 'none';
     this._audio.src = params.src;
+    this._audio.volume = this._volume;
     this._audio.addEventListener('playing', function(e){
         if(typeof _this._events.onplay === 'function'){
             _this._events.onplay.call(null, e, _this);
@@ -43,48 +44,46 @@ var AudioPlayer = function(params){
 };
 
 /**
- * Play audio
- * 
  * @return AudioPlayer
  */
 AudioPlayer.prototype.play = function(){
+    if(!this._audio) return this;
+
     this._audio.play();
 
     return this;
-}
+};
 
 /**
- * Pause audio
- * 
  * @return AudioPlayer
  */
 AudioPlayer.prototype.pause = function(){
+    if(!this._audio) return this;
+
     this._audio.pause();
 
     return this;
-}
+};
 
 /**
- * Stop audio
- * 
  * @return AudioPlayer
  */
 AudioPlayer.prototype.stop = function(){
+    if(!this._audio) return this;
+
     this._audio.pause();
     this._audio.currentTime = 0;
 
     return this;
-}
+};
 
 /**
- * Get/set audio position
- * 
  * @param integer value
- *
- * @return mixed
- * @throw Error if argument is invalid
+ * @return integer|AudioPlayer
  */
 AudioPlayer.prototype.position = function(value){
+    if(!this._audio) return this;
+
     if(typeof value === 'undefined'){
         return this._audio.currentTime;
     }
@@ -96,26 +95,24 @@ AudioPlayer.prototype.position = function(value){
     this._audio.currentTime = value;
 
     return this;
-}
+};
 
 /**
- * Get audio duration
- * 
  * @return integer
  */
 AudioPlayer.prototype.duration = function(){
+    if(!this._audio) return 0;
+
     return this._audio.duration;
-}
+};
 
 /**
- * Get/set audio source
- * 
  * @param string value
- * 
- * @return mixed
- * @throw Error if argument is invalid
+ * @return string|AudioPlayer
  */
 AudioPlayer.prototype.source = function(value){
+    if(!this._audio) return this;
+
     if(typeof value === 'undefined'){
         return this._audio.src;
     }
@@ -127,17 +124,15 @@ AudioPlayer.prototype.source = function(value){
     this._audio.src = value;
 
     return this;
-}
+};
 
 /**
- * Get/set audio volume
- * 
  * @param integer value
- * 
- * @return mixed
- * @throw Error if argument is invalid
+ * @return integer|AudioPlayer
  */
 AudioPlayer.prototype.volume = function(value){
+    if(!this._audio) return this;
+
     if(typeof value === 'undefined'){
         return this._audio.volume;
     }
@@ -149,56 +144,36 @@ AudioPlayer.prototype.volume = function(value){
     this._audio.volume = value;
 
     return this;
-}
+};
 
 /**
- * Mute audio
- * 
  * @return AudioPlayer
  */
 AudioPlayer.prototype.mute = function(){
+    if(!this._audio) return this;
+
     this._volume = this._audio.volume;
     this._audio.volume = 0;
     this._mute = true;
 
     return this;
-}
+};
 
 /**
- * Unmute audio
- * 
  * @return AudioPlayer
  */
 AudioPlayer.prototype.unmute = function(){
+    if(!this._audio) return this;
+
     this._audio.volume = this._volume;
     this._mute = false;
 
     return this;
-}
+};
 
 /**
- * Return audio status
- * 
  * @return boolean
  */
 AudioPlayer.prototype.isPlaying = function(){
-    return this._audio.currentTime > 0 && !this._audio.paused;
-}
-
-/**
- * Get type
- * 
- * @return Object
- */
-AudioPlayer.prototype.type = function(){
-    return this._type;
-}
-
-/**
- * Get metadata
- * 
- * @return Object
- */
-AudioPlayer.prototype.metadata = function(){
-    return this._metadata;
-}
+    return this._audio && this._audio.currentTime > 0 && !this._audio.paused;
+};
