@@ -1,7 +1,4 @@
 /**
- * @author Cyril Vermande (cyril@cyrilwebdesign.com)
- * @license MIT
- * @copyright All rights reserved 2016 Cyril Vermande
  */
 
 var StormPlayer = function(){

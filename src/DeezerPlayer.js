@@ -1,11 +1,4 @@
 /**
- * @author Cyril Vermande (cyril@cyrilwebdesign.com)
- * @license MIT
- * @copyright All rights reserved 2018 Cyril Vermande
- * @see https://developers.deezer.com/sdk/javascript
- */
-
-/**
  * @return DeezerPlayer
  */
 var DeezerPlayer = function(params){

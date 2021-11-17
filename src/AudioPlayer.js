@@ -1,11 +1,4 @@
 /**
- * @author Cyril Vermande (cyril@cyrilwebdesign.com)
- * @license MIT
- * @copyright All rights reserved 2016 Cyril Vermande
- * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
- */
-
-/**
  * @return AudioPlayer
  */
 var AudioPlayer = function(params){

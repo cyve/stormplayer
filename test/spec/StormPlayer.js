@@ -1,5 +1,5 @@
 /**
- * @author Cyril Vermande (cyril@cyrilwebdesign.com)
+ * @author Cyril Vermande
  * @license MIT
  */
 

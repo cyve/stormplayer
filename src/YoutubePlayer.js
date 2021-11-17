@@ -1,7 +1,4 @@
 /**
- * @author Cyril Vermande (cyril@cyrilwebdesign.com)
- * @license MIT
- * @copyright All rights reserved 2018 Cyril Vermande
  * @see https://developers.google.com/youtube/iframe_api_reference
  */
 

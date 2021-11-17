@@ -1,11 +1,4 @@
 /**
- * @author Cyril Vermande (cyril@cyrilwebdesign.com)
- * @license MIT
- * @copyright All rights reserved 2018 Cyril Vermande
- * @see https://developer.soundcloud.com/docs/api/sdks#streaming
- */
-
-/**
  * @return SoundcloudPlayer
  */
 var SoundcloudPlayer = function(params){
